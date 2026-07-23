@@ -2,7 +2,7 @@
 
 **Data:** 22 de julho de 2026
 
-**Status:** Aguardando revisão final do usuário
+**Status:** Aprovado pelo usuário
 
 **Produto:** Perfumário — Nossa estante virtual inteligente
 
