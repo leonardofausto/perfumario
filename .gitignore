@@ -1,0 +1,25 @@
+# Dependencies and builds
+node_modules/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Platform state
+.vercel/
+.supabase/
+
+# Local agent artifacts
+.superpowers/
+graphify-out/
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+*.log
