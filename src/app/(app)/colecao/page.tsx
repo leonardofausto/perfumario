@@ -1,4 +1,4 @@
-import { LibraryBig } from "lucide-react";
+import { LibraryBig, Plus } from "lucide-react";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
@@ -13,6 +13,7 @@ export default function CollectionPage() {
         title="Minha Coleção"
       />
       <EmptyState
+        action={{ href: "/colecao", icon: Plus, label: "Começar coleção" }}
         description="O cadastro de perfumes chega na próxima etapa do projeto. Sua coleção será privada e visível somente para você."
         icon={LibraryBig}
         title="Pronta para receber seus perfumes"

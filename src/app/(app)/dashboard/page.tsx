@@ -1,5 +1,4 @@
-import { Clock3, Heart, LibraryBig, Plus, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Clock3, Heart, LibraryBig, Sparkles } from "lucide-react";
 
 import { StatCard } from "@/components/dashboard/stat-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -10,12 +9,6 @@ export default function DashboardPage() {
   return (
     <div className={styles.page}>
       <PageHeader
-        action={
-          <Link className={styles.headerAction} href="/colecao">
-            <Plus aria-hidden="true" size={17} />
-            Começar coleção
-          </Link>
-        }
         description="Acompanhe sua estante e prepare o caminho para recomendações cada vez mais pessoais."
         eyebrow="Visão geral"
         title="Dashboard"

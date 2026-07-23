@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "./workspace.module.css";
 
 type EmptyStateProps = {
-  action?: { href: string; label: string };
+  action?: { href: string; icon?: LucideIcon; label: string };
   description: string;
   icon: LucideIcon;
   title: string;
@@ -19,7 +19,12 @@ export function EmptyState({ action, description, icon: Icon, title }: EmptyStat
         </span>
         <h2>{title}</h2>
         <p>{description}</p>
-        {action ? <Link href={action.href}>{action.label}</Link> : null}
+        {action ? (
+          <Link href={action.href}>
+            {action.icon ? <action.icon aria-hidden="true" size={17} /> : null}
+            {action.label}
+          </Link>
+        ) : null}
       </div>
     </section>
   );

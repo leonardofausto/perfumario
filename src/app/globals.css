@@ -25,6 +25,7 @@
 
 html {
   background: var(--background);
+  scrollbar-gutter: stable;
 }
 
 body {
