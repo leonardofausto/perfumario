@@ -6,6 +6,7 @@
   --ivory-raised: #fffaf1;
   --green: #236b49;
   --green-dark: #174b35;
+  --green-deep: #1c3a27;
   --green-soft: #dfebdf;
   --sand: #ddceb4;
   --sand-strong: #c8b38f;
@@ -33,6 +34,18 @@ body {
   color: var(--foreground);
   font-family: var(--font-body);
   text-rendering: optimizeLegibility;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
 a,
