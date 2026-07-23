@@ -16,6 +16,7 @@ test-results/
 .supabase/
 
 # Local agent artifacts
+.codex/
 .superpowers/
 .worktrees/
 graphify-out/
@@ -24,3 +25,4 @@ graphify-out/
 .DS_Store
 Thumbs.db
 *.log
+*.tsbuildinfo

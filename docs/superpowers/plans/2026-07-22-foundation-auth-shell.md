@@ -6,7 +6,7 @@
 
 **Architecture:** Next.js App Router uses Server Components by default and Supabase SSR for cookie-backed sessions. PostgreSQL and Storage enforce ownership with RLS; navigation guards are supplementary. Vercel Git integration publishes previews and production after the same checks used locally.
 
-**Tech Stack:** Node.js 24.18.0, Next.js 16.2.11, React 19.2.8, TypeScript 7.0.2, Tailwind CSS 4.3.3, Supabase JS 2.110.8, Supabase SSR 0.12.3, Zod 4.4.3, Vitest 4.1.10, Testing Library, Playwright 1.61.1, Vercel CLI 56.5.0, Supabase CLI 2.109.1, GRAPHIFY.
+**Tech Stack:** Node.js 24.18.0, Next.js 16.2.11, React 19.2.8, TypeScript 6.0.3, Tailwind CSS 4.3.3, Supabase JS 2.110.8, Supabase SSR 0.12.3, Zod 4.4.3, Vitest 4.1.10, Testing Library, Playwright 1.61.1, Vercel CLI 56.5.0, Supabase CLI 2.109.1, GRAPHIFY.
 
 ## Global Constraints
 
@@ -95,13 +95,17 @@ Create `package.json` with exact versions:
     "@types/node": "24.13.3",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "eslint": "10.7.0",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.2.11",
     "jsdom": "29.1.1",
     "supabase": "2.109.1",
     "tailwindcss": "4.3.3",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "vitest": "4.1.10"
+  },
+  "overrides": {
+    "postcss": "8.5.22",
+    "sharp": "0.35.3"
   }
 }
 ```
