@@ -17,6 +17,7 @@ test-results/
 
 # Local agent artifacts
 .superpowers/
+.worktrees/
 graphify-out/
 
 # Editor and OS files
