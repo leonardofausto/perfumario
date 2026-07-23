@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, LogOut, UserRoundPen } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,6 +10,7 @@ import { logoutAction } from "@/app/(app)/actions";
 import styles from "./app-shell.module.css";
 
 type UserMenuProps = {
+  avatarUrl?: string | null;
   displayName: string;
   email: string;
 };
@@ -22,7 +24,7 @@ function initials(value: string) {
     .join("") || "P";
 }
 
-export function UserMenu({ displayName, email }: UserMenuProps) {
+export function UserMenu({ avatarUrl, displayName, email }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +75,11 @@ export function UserMenu({ displayName, email }: UserMenuProps) {
         type="button"
       >
         <span aria-hidden="true" className={styles.avatarFallback}>
-          {initials(displayName || email)}
+          {avatarUrl ? (
+            <Image alt="" fill sizes="39px" src={avatarUrl} />
+          ) : (
+            initials(displayName || email)
+          )}
         </span>
         <span className={styles.accountCopy}>
           <strong>Minha conta</strong>

@@ -10,12 +10,13 @@ import styles from "./app-shell.module.css";
 import { UserMenu } from "./user-menu";
 
 type AppSidebarProps = {
+  avatarUrl?: string | null;
   displayName: string;
   email: string;
   onNavigate?: () => void;
 };
 
-export function AppSidebar({ displayName, email, onNavigate }: AppSidebarProps) {
+export function AppSidebar({ avatarUrl, displayName, email, onNavigate }: AppSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -38,7 +39,7 @@ export function AppSidebar({ displayName, email, onNavigate }: AppSidebarProps) 
           );
         })}
       </nav>
-      <UserMenu displayName={displayName} email={email} />
+      <UserMenu avatarUrl={avatarUrl} displayName={displayName} email={email} />
     </div>
   );
 }

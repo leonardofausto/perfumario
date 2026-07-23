@@ -7,13 +7,14 @@ import styles from "./app-shell.module.css";
 import { AppSidebar } from "./app-sidebar";
 
 type MobileNavigationProps = {
+  avatarUrl?: string | null;
   displayName: string;
   email: string;
   onClose: () => void;
   open: boolean;
 };
 
-export function MobileNavigation({ displayName, email, onClose, open }: MobileNavigationProps) {
+export function MobileNavigation({ avatarUrl, displayName, email, onClose, open }: MobileNavigationProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export function MobileNavigation({ displayName, email, onClose, open }: MobileNa
         <button aria-label="Fechar menu" className={styles.closeMenu} onClick={onClose} type="button">
           <X aria-hidden="true" size={22} />
         </button>
-        <AppSidebar displayName={displayName} email={email} onNavigate={onClose} />
+        <AppSidebar avatarUrl={avatarUrl} displayName={displayName} email={email} onNavigate={onClose} />
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { MobileNavigation } from "./mobile-navigation";
 
 type AppShellProps = {
   children: ReactNode;
-  profile: { displayName: string };
+  profile: { avatarUrl?: string | null; displayName: string };
   user: { email?: string };
 };
 
@@ -24,7 +24,7 @@ export function AppShell({ children, profile, user }: AppShellProps) {
   return (
     <div className={styles.appShell}>
       <aside className={styles.desktopSidebar}>
-        <AppSidebar displayName={profile.displayName} email={email} />
+        <AppSidebar avatarUrl={profile.avatarUrl} displayName={profile.displayName} email={email} />
       </aside>
 
       <header className={styles.mobileHeader}>
@@ -35,6 +35,7 @@ export function AppShell({ children, profile, user }: AppShellProps) {
       </header>
 
       <MobileNavigation
+        avatarUrl={profile.avatarUrl}
         displayName={profile.displayName}
         email={email}
         onClose={closeMobile}

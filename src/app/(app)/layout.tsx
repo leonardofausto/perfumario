@@ -2,21 +2,19 @@ import type { ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { requireUser } from "@/lib/auth/session";
-import { createServerSupabase } from "@/lib/supabase/server";
+import { getOwnProfile } from "@/lib/profile/queries";
 
 export default async function ProtectedLayout({ children }: { children: ReactNode }) {
   const user = await requireUser();
-  const supabase = await createServerSupabase();
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const profile = await getOwnProfile(user.id);
   const fallbackName = user.email?.split("@")[0] || "Minha conta";
 
   return (
     <AppShell
-      profile={{ displayName: profile?.display_name || fallbackName }}
+      profile={{
+        avatarUrl: profile?.avatarUrl ?? null,
+        displayName: profile?.displayName || fallbackName,
+      }}
       user={{ email: user.email }}
     >
       {children}
