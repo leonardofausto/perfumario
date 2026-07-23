@@ -13,7 +13,7 @@ export function AuthShell({ children }: Readonly<{ children: ReactNode }>) {
             alt="Coleção de perfumes em uma estante"
             fill
             priority
-            sizes="(max-width: 767px) 100vw, 70vw"
+            sizes="(max-width: 840px) 100vw, 60vw"
             src="/images/login-perfumes.png"
           />
           <div className={styles.overlay} />
