@@ -25,6 +25,13 @@ export async function updateSupabaseSession(request: NextRequest) {
     },
   );
 
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+
+  if (request.nextUrl.pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = data?.claims ? "/dashboard" : "/login";
+    return NextResponse.redirect(url, { headers: response.headers });
+  }
+
   return response;
 }
