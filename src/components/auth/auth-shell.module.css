@@ -44,25 +44,27 @@
 }
 
 .photoContent > div {
-  max-width: 510px;
+  max-width: 100%;
 }
 
 .photoContent h1 {
-  max-width: 470px;
+  max-width: 100%;
   margin: 14px 0 16px;
   font-family: var(--font-display);
-  font-size: clamp(3rem, 5vw, 5.3rem);
+  font-size: clamp(2.2rem, 3.8vw, 4.4rem);
   font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 .photoContent p:not(.kicker) {
-  max-width: 430px;
+  max-width: 100%;
   margin: 0;
   color: rgba(255, 255, 255, 0.84);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .kicker {
@@ -112,6 +114,7 @@
   .photoContent h1 {
     margin-block: 8px;
     font-size: clamp(2.2rem, 10vw, 3.6rem);
+    white-space: normal;
   }
 
   .photoContent p:not(.kicker) {
