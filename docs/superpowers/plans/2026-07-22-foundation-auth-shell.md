@@ -71,7 +71,7 @@ Create `package.json` with exact versions:
     "dev": "next dev",
     "build": "next build",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "check:stable": "node scripts/check-stable-deps.mjs",

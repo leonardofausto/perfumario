@@ -1,0 +1,128 @@
+.page {
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: 24px;
+  background: var(--ivory);
+}
+
+.shell {
+  display: grid;
+  width: min(100%, 1280px);
+  min-height: min(760px, calc(100svh - 48px));
+  grid-template-columns: minmax(0, 7fr) minmax(340px, 3fr);
+  overflow: hidden;
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  background: var(--ivory-raised);
+  box-shadow: 0 24px 70px rgba(49, 39, 25, 0.14);
+}
+
+.photograph {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
+  background: #173b2c;
+}
+
+.photograph > img {
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(110deg, rgba(13, 69, 45, 0.84), rgba(13, 60, 42, 0.22) 66%),
+    linear-gradient(180deg, transparent 52%, rgba(5, 28, 19, 0.55));
+}
+
+.photoContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(28px, 4.5vw, 62px);
+  color: white;
+}
+
+.photoContent > div {
+  max-width: 510px;
+}
+
+.photoContent h1 {
+  max-width: 470px;
+  margin: 14px 0 16px;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 5vw, 5.3rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+}
+
+.photoContent p:not(.kicker) {
+  max-width: 430px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.kicker {
+  margin: 0;
+  color: #d7eadf;
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.formPanel {
+  display: flex;
+  align-items: center;
+  padding: clamp(28px, 4vw, 54px);
+  background: var(--ivory-raised);
+}
+
+.formPanel > * {
+  width: 100%;
+}
+
+@media (max-width: 840px) {
+  .page {
+    display: block;
+    padding: 0;
+  }
+
+  .shell {
+    min-height: 100svh;
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(210px, 31svh) 1fr;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .photograph {
+    min-height: 210px;
+  }
+
+  .photoContent {
+    padding: 24px;
+  }
+
+  .photoContent h1 {
+    margin-block: 8px;
+    font-size: clamp(2.2rem, 10vw, 3.6rem);
+  }
+
+  .photoContent p:not(.kicker) {
+    display: none;
+  }
+
+  .formPanel {
+    align-items: start;
+    padding: 34px 24px 48px;
+  }
+}

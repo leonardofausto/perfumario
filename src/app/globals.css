@@ -2,8 +2,20 @@
 
 :root {
   color-scheme: light;
-  --background: #faf6ed;
-  --foreground: #1d1913;
+  --ivory: #f6f0e4;
+  --ivory-raised: #fffaf1;
+  --green: #236b49;
+  --green-dark: #174b35;
+  --green-soft: #dfebdf;
+  --sand: #ddceb4;
+  --sand-strong: #c8b38f;
+  --ink: #1c1710;
+  --muted: #756959;
+  --amber: #b8793e;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  --background: var(--ivory);
+  --foreground: var(--ink);
 }
 
 * {
@@ -19,5 +31,161 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+}
+
+a,
+button,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--amber) 72%, white);
+  outline-offset: 3px;
+}
+
+.public-background {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 91% 77%, rgba(173, 207, 178, 0.48), transparent 30%),
+    var(--ivory);
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+}
+
+.brand-mark[data-inverse] {
+  color: white;
+}
+
+.brand-symbol {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--green);
+  color: white;
+}
+
+.brand-mark[data-inverse] .brand-symbol {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.brand-symbol svg {
+  width: 27px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.brand-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.brand-copy strong {
+  font-size: 1rem;
+}
+
+.brand-copy small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.brand-mark[data-inverse] .brand-copy small {
+  color: rgba(255, 255, 255, 0.73);
+}
+
+.auth-placeholder-form {
+  display: grid;
+  gap: 9px;
+}
+
+.auth-placeholder-form .form-eyebrow {
+  margin: 0 0 4px;
+  color: var(--green);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.auth-placeholder-form h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.auth-placeholder-form .form-intro {
+  margin: 4px 0 17px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.auth-placeholder-form label {
+  margin-top: 5px;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.auth-placeholder-form input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: var(--ink);
+}
+
+.auth-placeholder-form > a {
+  justify-self: end;
+  margin: 4px 0 10px;
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-placeholder-form button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--green);
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(35, 107, 73, 0.22);
+}
+
+.auth-placeholder-form small {
+  margin-top: 18px;
+  padding-top: 17px;
+  border-top: 1px solid #ece1ce;
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
