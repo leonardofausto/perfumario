@@ -106,12 +106,12 @@ input {
   color: rgba(255, 255, 255, 0.73);
 }
 
-.auth-placeholder-form {
+.auth-form {
   display: grid;
   gap: 9px;
 }
 
-.auth-placeholder-form .form-eyebrow {
+.auth-form .form-eyebrow {
   margin: 0 0 4px;
   color: var(--green);
   font-size: 0.68rem;
@@ -120,7 +120,7 @@ input {
   text-transform: uppercase;
 }
 
-.auth-placeholder-form h2 {
+.auth-form h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2rem, 3.4vw, 2.8rem);
@@ -129,20 +129,20 @@ input {
   line-height: 1;
 }
 
-.auth-placeholder-form .form-intro {
+.auth-form .form-intro {
   margin: 4px 0 17px;
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.auth-placeholder-form label {
+.auth-form label {
   margin-top: 5px;
   font-size: 0.78rem;
   font-weight: 750;
 }
 
-.auth-placeholder-form input {
+.auth-form input {
   width: 100%;
   min-height: 46px;
   padding: 0 13px;
@@ -152,7 +152,7 @@ input {
   color: var(--ink);
 }
 
-.auth-placeholder-form > a {
+.auth-form .form-link {
   justify-self: end;
   margin: 4px 0 10px;
   color: var(--green);
@@ -161,7 +161,7 @@ input {
   text-decoration: none;
 }
 
-.auth-placeholder-form button {
+.auth-form .primary-submit {
   min-height: 48px;
   border: 0;
   border-radius: 8px;
@@ -172,13 +172,72 @@ input {
   box-shadow: 0 8px 18px rgba(35, 107, 73, 0.22);
 }
 
-.auth-placeholder-form small {
+.auth-form small {
   margin-top: 18px;
   padding-top: 17px;
   border-top: 1px solid #ece1ce;
   color: var(--muted);
   font-size: 0.7rem;
   text-align: center;
+}
+
+.auth-form .form-link-start {
+  justify-self: start;
+  margin-top: 9px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 76px;
+}
+
+.auth-form .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  min-height: 34px;
+  padding-inline: 8px;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.auth-form .primary-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.field-error {
+  margin: -3px 0 2px;
+  color: #a3372a;
+  font-size: 0.72rem;
+}
+
+.form-message {
+  margin: 0 0 8px;
+  padding: 11px 12px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.form-message-error {
+  border: 1px solid #e7c5bd;
+  background: #fff3f0;
+  color: #79281e;
+}
+
+.form-message-success {
+  border: 1px solid #bedbc9;
+  background: #f0f8f3;
+  color: #195d3c;
 }
 
 @media (prefers-reduced-motion: reduce) {
