@@ -1,0 +1,250 @@
+.appShell {
+  min-height: 100svh;
+  background: var(--ivory);
+}
+
+.desktopSidebar {
+  position: fixed;
+  z-index: 20;
+  inset: 0 auto 0 0;
+  width: 270px;
+  padding: 26px 18px 18px;
+  background:
+    radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 34%),
+    var(--green-deep);
+  color: white;
+}
+
+.sidebarInner {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
+
+.navigation {
+  display: grid;
+  gap: 6px;
+  margin-top: 48px;
+}
+
+.navigation a {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 13px;
+  padding: 0 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navigation a:hover,
+.navigation .activeLink {
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+}
+
+.mainContent {
+  min-width: 0;
+  margin-left: 270px;
+  padding: clamp(28px, 4vw, 58px);
+}
+
+.userMenu {
+  position: relative;
+  margin-top: auto;
+}
+
+.accountButton {
+  display: grid;
+  width: 100%;
+  min-height: 62px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: white;
+  cursor: pointer;
+  text-align: left;
+}
+
+.avatarFallback {
+  display: grid;
+  width: 39px;
+  height: 39px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 50%;
+  background: #17231e;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+}
+
+.accountCopy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.accountCopy strong,
+.accountCopy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountCopy strong {
+  font-size: 0.8rem;
+}
+
+.accountCopy small {
+  color: rgba(255, 255, 255, 0.67);
+  font-size: 0.66rem;
+}
+
+.userPopover {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 9px);
+  left: 0;
+  overflow: hidden;
+  padding: 7px;
+  border: 1px solid #ddd2bf;
+  border-radius: 12px;
+  background: #fffdf8;
+  color: var(--ink);
+  box-shadow: 0 16px 34px rgba(15, 39, 28, 0.2);
+}
+
+.userIdentity {
+  display: grid;
+  gap: 2px;
+  padding: 9px 10px 11px;
+  border-bottom: 1px solid #ece3d5;
+}
+
+.userIdentity small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.66rem;
+  text-overflow: ellipsis;
+}
+
+.userPopover a,
+.userPopover form button {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  padding-inline: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.userPopover a:hover,
+.userPopover form button:hover {
+  background: #f4edde;
+}
+
+.mobileHeader,
+.mobileLayer {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .desktopSidebar {
+    display: none;
+  }
+
+  .mobileHeader {
+    position: sticky;
+    z-index: 15;
+    top: 0;
+    display: flex;
+    min-height: 68px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--sand);
+    background: rgba(250, 247, 239, 0.94);
+    backdrop-filter: blur(12px);
+  }
+
+  .mobileHeader > button,
+  .closeMenu {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--sand);
+    border-radius: 10px;
+    background: #fffdf8;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .mainContent {
+    margin-left: 0;
+    padding: clamp(24px, 5vw, 46px);
+  }
+
+  .mobileLayer {
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    display: block;
+  }
+
+  .scrim {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0;
+    background: rgba(10, 27, 20, 0.58);
+  }
+
+  .mobileDialog {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: min(88vw, 310px);
+    padding: 24px 18px 18px;
+    background: var(--green-deep);
+    color: white;
+    box-shadow: 20px 0 50px rgba(6, 28, 19, 0.28);
+  }
+
+  .closeMenu {
+    position: absolute;
+    z-index: 2;
+    top: 19px;
+    right: 16px;
+    border-color: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobileHeader {
+    min-height: 62px;
+    padding-inline: 14px;
+  }
+
+  .mainContent {
+    padding: 24px 18px 38px;
+  }
+}
