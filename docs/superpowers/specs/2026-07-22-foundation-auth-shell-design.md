@@ -175,7 +175,7 @@ As credenciais compartilhadas durante o planejamento devem ser rotacionadas ante
 
 Os CLIs oficiais de GitHub, Vercel e Supabase serão instalados em versões estáveis e autenticados no ambiente local. A integração Git da Vercel criará Preview Deployments para branches e publicará produção a partir da branch principal. Não haverá um deploy manual duplicado para cada commit.
 
-Migrations serão versionadas em `supabase/migrations`. Durante o desenvolvimento, o Codex executará validação local e, após sucesso, aplicará migrations aprovadas ao projeto vinculado usando o Supabase CLI. O pipeline verificará consistência e impedirá entrega quando houver falha ou migration local ainda não aplicada. Migrations não serão executadas indiscriminadamente em commits que alterem apenas o frontend.
+Migrations serão versionadas em `supabase/migrations`. Por decisão do usuário, o projeto não dependerá de Docker: durante o desenvolvimento, o Codex fará validação estática e testes transacionais com `ROLLBACK` no projeto remoto antes de aplicar migrations aprovadas. O pipeline verificará consistência e impedirá entrega quando houver falha ou migration local ainda não aplicada. Migrations não serão executadas indiscriminadamente em commits que alterem apenas o frontend.
 
 ## Operação assistida
 

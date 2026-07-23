@@ -166,23 +166,23 @@ git commit -m "chore: bootstrap stable Next.js toolchain"
 **Interfaces:**
 - Produces: `public.profiles`; `private-avatars` bucket; `handle_new_user()` and `set_updated_at()` triggers; owner-only database and object policies.
 
-- [ ] **Step 1: Initialize and link the local Supabase CLI**
+- [ ] **Step 1: Initialize the local Supabase CLI and verify plugin access**
 
-Run `npm exec supabase init`, `npm exec supabase login`, then `npm exec supabase link --project-ref otyxdfwoguvxakczxdpi`. Enter the database password only at the secure prompt. Expected: `npm exec supabase projects list` shows the linked project; no secret is written to Git.
+Run `npx supabase init` and verify project `otyxdfwoguvxakczxdpi` through the authenticated Supabase plugin. Docker is intentionally not installed. Expected: `supabase/config.toml` exists and the plugin reports project `perfumario` as healthy; no secret is written to Git.
 
 - [ ] **Step 2: Write the failing pgTAP policy test**
 
-Create `supabase/tests/profiles_rls.sql` to assert: table and bucket exist; RLS is enabled; an authenticated UUID can select/update its own profile; the same UUID cannot select/update another profile; avatar writes are allowed only when the first storage folder equals `auth.uid()::text`. Run `npm exec supabase start` then `npm exec supabase test db`; expected: failure because the schema is absent.
+Create `supabase/tests/profiles_rls.sql` to assert: table and bucket exist; RLS is enabled; an authenticated UUID can select/update its own profile; the same UUID cannot select/update another profile; avatar writes are allowed only when the first storage folder equals `auth.uid()::text`. Query the remote catalogs before implementation; expected: failure because the schema and bucket are absent.
 
 - [ ] **Step 3: Implement the migration**
 
 The migration must create `profiles(id uuid primary key references auth.users on delete cascade, display_name text check (char_length(display_name) <= 80), avatar_path text, created_at timestamptz default now(), updated_at timestamptz default now())`; enable RLS; add owner `select` and `update` policies; add a `security definer set search_path = ''` trigger that inserts `new.id` and metadata display name on `auth.users` insert; add the timestamp trigger; insert private bucket `private-avatars` with 5 MB limit and MIME types `image/jpeg,image/png,image/webp`; and add Storage select/insert/update/delete policies where `(storage.foldername(name))[1] = auth.uid()::text`.
 
-Run `npm exec supabase db reset` and `npm exec supabase test db`; expected: all tests pass.
+Execute the migration and assertions inside a single remote `BEGIN ... ROLLBACK` transaction using the authenticated Supabase plugin. Expected: all assertions pass and catalog queries after rollback still show no permanent schema change.
 
 - [ ] **Step 4: Apply the approved migration remotely**
 
-Run `npm exec supabase db push --linked`, then `npm exec supabase migration list`. Expected: local and remote migration IDs match. Never pass the database password as a command-line argument.
+Apply the reviewed migration with the authenticated Supabase plugin, then compare the local migration filename with the plugin migration history. Expected: local and remote migration names match. Never pass the database password as a command-line argument.
 
 - [ ] **Step 5: Commit**
 
