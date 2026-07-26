@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { PerfumeDetail as PerfumeDetailData } from "@/features/perfumes/types";
 
 import styles from "./detail.module.css";
+import { DeletePerfumeButton } from "./delete-perfume-button";
 import { FavoriteButton } from "./favorite-button";
 import { OlfactoryFamilyChips } from "./olfactory-family-chips";
 import { OlfactoryPyramid } from "./olfactory-pyramid";
@@ -72,6 +73,7 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
               <Pencil size={17} />
               Editar perfume
             </Link>
+            <DeletePerfumeButton id={perfume.id} name={perfume.name} />
           </div>
         </div>
       </header>

@@ -147,7 +147,8 @@
 }
 
 .favoriteButton,
-.editButton {
+.editButton,
+.deleteButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -171,6 +172,82 @@
   border: 1px solid var(--line);
   background: #fff;
   color: var(--ink);
+}
+
+.deleteButton {
+  border: 1px solid #e1c8c4;
+  background: #fff8f7;
+  color: #903d36;
+  cursor: pointer;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(28, 25, 21, 0.48);
+  backdrop-filter: blur(5px);
+}
+
+.dialog {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 28px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.22);
+}
+
+.dialog h2 {
+  margin: 0 34px 8px 0;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.dialog p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.dialogClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: #f4f1ec;
+  cursor: pointer;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+.dialogActions button {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.dialogActions button:last-child {
+  border-color: #953d37;
+  background: #953d37;
+  color: #fff;
 }
 
 .section {
