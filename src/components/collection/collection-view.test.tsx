@@ -22,7 +22,7 @@ const perfumes: PerfumeSummary[] = [
   {
     id: "amber",
     brand: "Zeta",
-    name: "Âmbar",
+    name: "Ambar",
     concentration: "eau_de_parfum",
     bottleFormat: "full_bottle",
     inspirationKind: "original",
@@ -38,8 +38,8 @@ const perfumes: PerfumeSummary[] = [
     concentration: "eau_de_toilette",
     bottleFormat: "decant",
     inspirationKind: "inspiration",
-    inspiredBy: "Referência",
-    olfactoryFamilies: ["Cítrico"],
+    inspiredBy: "Referencia",
+    olfactoryFamilies: ["Citrico"],
     imageUrl: "https://signed.example/brisa.webp",
     isFavorite: true,
   },
@@ -61,33 +61,27 @@ describe("CollectionView", () => {
     const user = userEvent.setup();
     render(<CollectionView perfumes={perfumes} />);
 
-    await user.click(screen.getByRole("button", { name: "Adicionar Âmbar aos favoritos" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar Ambar aos favoritos" }));
 
     expect(mocks.toggleFavoriteAction).toHaveBeenCalledWith("amber", true);
     expect(mocks.refresh).toHaveBeenCalled();
   });
 
-  it("filters by search, favorite status, and brand", async () => {
-    const user = userEvent.setup();
+  it("keeps the initial collection view as a visual gallery", () => {
     render(<CollectionView perfumes={perfumes} />);
 
-    await user.type(screen.getByRole("searchbox"), "brisa");
-    expect(screen.getByRole("link", { name: /ver detalhes de brisa/i })).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: /ver detalhes de âmbar/i })).toBeNull();
-
-    await user.clear(screen.getByRole("searchbox"));
-    await user.selectOptions(screen.getByLabelText("Exibir perfumes"), "favorites");
-    expect(screen.queryByRole("link", { name: /ver detalhes de âmbar/i })).toBeNull();
-
-    await user.selectOptions(screen.getByLabelText("Exibir perfumes"), "all");
-    await user.selectOptions(screen.getByLabelText("Filtrar por marca"), "Zeta");
-    expect(screen.getByRole("link", { name: /ver detalhes de âmbar/i })).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).toBeNull();
+    expect(screen.queryByLabelText("Exibir perfumes")).toBeNull();
+    expect(screen.queryByLabelText("Filtrar por marca")).toBeNull();
+    expect(screen.queryByText("Eau de toilette")).toBeNull();
+    expect(screen.queryByText("Decant")).toBeNull();
+    expect(screen.getByText("2 perfumes")).toBeInTheDocument();
   });
 
   it("shows a truthful empty state and the dedicated add route", () => {
     render(<CollectionView perfumes={[]} />);
 
-    expect(screen.getByText("Sua estante ainda está vazia.")).toBeInTheDocument();
+    expect(screen.getByText(/Sua estante ainda est/)).toBeInTheDocument();
     for (const link of screen.getAllByRole("link", { name: "Adicionar perfume" })) {
       expect(link).toHaveAttribute("href", "/colecao/novo");
     }

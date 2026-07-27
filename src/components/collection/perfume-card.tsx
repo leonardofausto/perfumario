@@ -14,16 +14,6 @@ interface PerfumeCardProps {
   onToggleFavorite: () => void;
 }
 
-const concentrationLabels = {
-  parfum: "Parfum",
-  eau_de_parfum: "Eau de parfum",
-  eau_de_toilette: "Eau de toilette",
-  eau_de_cologne: "Eau de cologne",
-  body_splash: "Body splash",
-  perfume_oil: "Óleo perfumado",
-  other: "Outra concentração",
-};
-
 export function PerfumeCard({
   perfume,
   favoritePending,
@@ -59,7 +49,7 @@ export function PerfumeCard({
               alt={`Frasco de ${perfume.name}`}
               className={styles.image}
               fill
-              sizes="(min-width: 1100px) 30vw, (min-width: 720px) 45vw, 90vw"
+              sizes="(min-width: 1280px) 24vw, (min-width: 760px) 48vw, 92vw"
               unoptimized
             />
           ) : (
@@ -73,16 +63,6 @@ export function PerfumeCard({
         <div className={styles.cardContent}>
           <span className={styles.brand}>{perfume.brand}</span>
           <h2 className={styles.name}>{perfume.name}</h2>
-          <div className={styles.cardMeta}>
-            <span>{concentrationLabels[perfume.concentration]}</span>
-            <span>{perfume.bottleFormat === "decant" ? "Decant" : "Frasco inteiro"}</span>
-          </div>
-          {perfume.inspirationKind !== "original" ? (
-            <span className={styles.inspiration}>
-              {perfume.inspirationKind === "dupe" ? "Dupe" : "Inspiração"} de{" "}
-              {perfume.inspiredBy}
-            </span>
-          ) : null}
         </div>
       </Link>
     </article>
