@@ -21,7 +21,7 @@ export type ImportManifestItem = {
   descriptionSourceUrls: string[];
   notes: Record<"top" | "heart" | "base", string[]>;
   scores: Array<{
-    category: "performance" | "season" | "occasion" | "time";
+    category: "accord" | "performance" | "season" | "occasion" | "time";
     metricKey: string;
     score: number | null;
   }>;

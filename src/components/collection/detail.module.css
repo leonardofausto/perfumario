@@ -325,6 +325,32 @@
   background: #315d46;
 }
 
+.accordList {
+  display: grid;
+  align-content: start;
+  gap: 0;
+  width: min(100%, 430px);
+}
+
+.accordRow {
+  min-height: 28px;
+  overflow: hidden;
+}
+
+.accordBar {
+  display: flex;
+  min-width: 34%;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 7px 7px 0;
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: lowercase;
+}
+
 .performanceSection {
   background: #f3f6f3;
 }

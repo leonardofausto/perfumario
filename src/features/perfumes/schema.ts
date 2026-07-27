@@ -19,6 +19,11 @@ const score = z.number().int().min(0).max(100).nullable();
 
 const perfumeScoreSchema = z.discriminatedUnion("category", [
   z.object({
+    category: z.literal("accord"),
+    metricKey: requiredText("Informe o acorde."),
+    score,
+  }),
+  z.object({
     category: z.literal("performance"),
     metricKey: z.enum(PERFORMANCE_METRICS),
     score,

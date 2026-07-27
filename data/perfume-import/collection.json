@@ -3,18 +3,124 @@
     "legacyKey": "armaf-odyssey-mandarin-sky",
     "brand": "ARMAF",
     "name": "Armaf Odyssey Mandarin Sky",
-    "description": "Descrição editorial ainda não cadastrada.",
-    "concentration": "other",
+    "description": "Armaf Odyssey Mandarin Sky combina uma abertura cítrica e aromática de mandarina, laranja, sálvia e açafrão com um coração gourmand de caramelo, tonka e tagetes. A base de vetiver, cedro e ambroxan dá um acabamento amadeirado âmbar moderno, mantendo a fragrância doce, luminosa e casual.",
+    "concentration": "eau_de_parfum",
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Cítrico",
+      "Gourmand",
+      "Amadeirado âmbar"
+    ],
     "isFavorite": true,
     "imageLocalPath": "public/images/perfumes/armaf-odyssey-mandarin-sky.png",
-    "imageSourceUrl": null,
-    "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
-    "scores": []
+    "imageSourceUrl": "https://armaf.com/products/odyssey-mega-for-men",
+    "descriptionSourceUrls": [
+      "https://armaf.com/products/odyssey-mega-for-men",
+      "https://www.fragrantica.com/perfume/Armaf/Odyssey-Mandarin-Sky-83132.html",
+      "https://hiddensamples.com/products/odyssey-mandarin-sky"
+    ],
+    "notes": {
+      "top": [
+        "Sálvia",
+        "Mandarina",
+        "Laranja",
+        "Açafrão"
+      ],
+      "heart": [
+        "Caramelo",
+        "Fava tonka",
+        "Tagetes"
+      ],
+      "base": [
+        "Vetiver",
+        "Cedro",
+        "Ambroxan"
+      ]
+    },
+    "scores": [
+      {
+        "category": "accord",
+        "metricKey": "citrico",
+        "score": 96
+      },
+      {
+        "category": "accord",
+        "metricKey": "caramelo",
+        "score": 88
+      },
+      {
+        "category": "accord",
+        "metricKey": "doce",
+        "score": 84
+      },
+      {
+        "category": "accord",
+        "metricKey": "ambar",
+        "score": 76
+      },
+      {
+        "category": "accord",
+        "metricKey": "aromatico",
+        "score": 70
+      },
+      {
+        "category": "accord",
+        "metricKey": "baunilha",
+        "score": 66
+      },
+      {
+        "category": "accord",
+        "metricKey": "amadeirado",
+        "score": 62
+      },
+      {
+        "category": "season",
+        "metricKey": "primavera",
+        "score": 78
+      },
+      {
+        "category": "season",
+        "metricKey": "verao",
+        "score": 68
+      },
+      {
+        "category": "season",
+        "metricKey": "outono",
+        "score": 82
+      },
+      {
+        "category": "season",
+        "metricKey": "inverno",
+        "score": 76
+      },
+      {
+        "category": "occasion",
+        "metricKey": "casual",
+        "score": 88
+      },
+      {
+        "category": "occasion",
+        "metricKey": "encontro",
+        "score": 86
+      },
+      {
+        "category": "occasion",
+        "metricKey": "festa",
+        "score": 72
+      },
+      {
+        "category": "time",
+        "metricKey": "tarde",
+        "score": 76
+      },
+      {
+        "category": "time",
+        "metricKey": "noite",
+        "score": 84
+      }
+    ]
   },
   {
     "legacyKey": "lattafa-fakhar-black",
@@ -25,12 +131,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": true,
     "imageLocalPath": "public/images/perfumes/lattafa-fakhar-black.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -42,12 +154,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/armaf-club-de-nuit-urban-man-elixir.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -59,12 +177,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/barbours-beauty-bold-homme.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -76,12 +200,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/eudora-club-6-voyage.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -93,12 +223,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/french-avenue-liquid-brun.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -110,12 +246,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/lescent-12-noble-nice.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -127,12 +269,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/lescent-13-feroce-provence.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -144,12 +292,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/lescent-14-brave-manhattan.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -161,12 +315,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/lescent-20-brise-amalfi.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -178,12 +338,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/maison-alhambra-mindset.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -195,12 +361,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/maison-alhambra-salvo.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -212,12 +384,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/natura-due-masculino.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -229,12 +407,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/boticario-egeo-man.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -246,12 +430,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/primacial-midtown.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   },
   {
@@ -263,12 +453,18 @@
     "bottleFormat": "full_bottle",
     "inspirationKind": "original",
     "inspiredBy": null,
-    "olfactoryFamilies": ["Não catalogada"],
+    "olfactoryFamilies": [
+      "Não catalogada"
+    ],
     "isFavorite": false,
     "imageLocalPath": "public/images/perfumes/primacial-vibration.png",
     "imageSourceUrl": null,
     "descriptionSourceUrls": [],
-    "notes": { "top": [], "heart": [], "base": [] },
+    "notes": {
+      "top": [],
+      "heart": [],
+      "base": []
+    },
     "scores": []
   }
 ]

@@ -6,7 +6,7 @@ import type {
 } from "./constants";
 
 export type NoteLayer = (typeof NOTE_LAYERS)[number];
-export type ScoreCategory = "performance" | "season" | "occasion" | "time";
+export type ScoreCategory = "accord" | "performance" | "season" | "occasion" | "time";
 export type InspirationKind = (typeof INSPIRATION_KINDS)[number];
 export type BottleFormat = (typeof BOTTLE_FORMATS)[number];
 export type Concentration = (typeof CONCENTRATIONS)[number];

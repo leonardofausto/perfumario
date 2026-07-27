@@ -35,6 +35,8 @@ const perfume: PerfumeDetailData = {
   scores: [
     { category: "performance", metricKey: "fixacao", score: 85 },
     { category: "performance", metricKey: "projecao", score: 70 },
+    { category: "accord", metricKey: "citrico", score: 96 },
+    { category: "accord", metricKey: "caramelo", score: 82 },
     { category: "season", metricKey: "verao", score: 45 },
     { category: "occasion", metricKey: "formal", score: 90 },
     { category: "time", metricKey: "noite", score: 95 },
@@ -67,6 +69,15 @@ describe("PerfumeDetail", () => {
     expect(screen.getByText("Bergamota")).toBeInTheDocument();
     expect(screen.getByText("Cedro")).toBeInTheDocument();
     expect(screen.getByText("Patchouli")).toBeInTheDocument();
+  });
+
+  it("renders main accords with Portuguese labels", () => {
+    render(<PerfumeDetail perfume={perfume} />);
+
+    expect(screen.getByRole("heading", { name: "Principais acordes" })).toBeInTheDocument();
+    expect(screen.getByText("Cítrico")).toBeInTheDocument();
+    expect(screen.getByText("Caramelo")).toBeInTheDocument();
+    expect(screen.getByLabelText("Cítrico: 96%")).toBeInTheDocument();
   });
 
   it("provides textual values alongside the performance radar", () => {

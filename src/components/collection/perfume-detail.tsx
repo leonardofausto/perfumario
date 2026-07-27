@@ -7,6 +7,7 @@ import type { PerfumeDetail as PerfumeDetailData } from "@/features/perfumes/typ
 import styles from "./detail.module.css";
 import { DeletePerfumeButton } from "./delete-perfume-button";
 import { FavoriteButton } from "./favorite-button";
+import { MainAccords } from "./main-accords";
 import { OlfactoryFamilyChips } from "./olfactory-family-chips";
 import { OlfactoryPyramid } from "./olfactory-pyramid";
 import { PerformanceRadar } from "./performance-radar";
@@ -77,6 +78,17 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
           </div>
         </div>
       </header>
+
+      {perfume.scores.some((score) => score.category === "accord" && score.score !== null) ? (
+        <section className={styles.section}>
+          <div className={styles.sectionHeading}>
+            <span>Perfil olfativo</span>
+            <h2>Principais acordes</h2>
+            <p>As facetas mais perceptíveis da fragrância, em ordem de presença.</p>
+          </div>
+          <MainAccords scores={perfume.scores} />
+        </section>
+      ) : null}
 
       <section className={styles.section}>
         <div className={styles.sectionHeading}>

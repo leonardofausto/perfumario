@@ -88,6 +88,7 @@ describe("perfume form validation", () => {
       perfumeFormSchema.safeParse({
         ...validPerfume,
         scores: [
+          { category: "accord", metricKey: "citrico", score: 95 },
           { category: "performance", metricKey: "projecao", score: 0 },
           { category: "time", metricKey: "noite", score: 100 },
           { category: "occasion", metricKey: "formal", score: null },

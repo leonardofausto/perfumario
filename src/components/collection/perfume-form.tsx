@@ -27,7 +27,7 @@ import type { ActionState } from "@/lib/auth/types";
 import styles from "./form.module.css";
 
 type ScoreGroup = {
-  category: ScoreCategory;
+  category: Exclude<ScoreCategory, "accord">;
   title: string;
   metrics: ReadonlyArray<string>;
   labels: Record<string, string>;
@@ -96,6 +96,31 @@ function list(value: string) {
     .filter(Boolean);
 }
 
+function parseAccords(value: string): PerfumeScore[] {
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [name = "", rawScore = ""] = line.split(":");
+      const scoreValue = Number(rawScore.trim());
+
+      return {
+        category: "accord" as const,
+        metricKey: name.trim(),
+        score: Number.isInteger(scoreValue) ? scoreValue : null,
+      };
+    })
+    .filter((score) => score.metricKey);
+}
+
+function formatAccords(scores: PerfumeScore[]) {
+  return scores
+    .filter((score) => score.category === "accord")
+    .map((score) => `${score.metricKey}: ${score.score ?? ""}`)
+    .join("\n");
+}
+
 function defaultScores(perfume?: PerfumeDetail) {
   return scoreGroups.flatMap(({ category, metrics }) =>
     metrics.map((metricKey) => ({
@@ -132,6 +157,7 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   });
   const initialScores = useMemo(() => defaultScores(perfume), [perfume]);
   const [scores, setScores] = useState<PerfumeScore[]>(initialScores);
+  const [accords, setAccords] = useState(formatAccords(perfume?.scores ?? []));
 
   function setScore(category: ScoreCategory, metricKey: string, value: string) {
     setScores((current) =>
@@ -144,6 +170,10 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   }
 
   const backHref = perfume ? `/colecao/${perfume.id}` : "/colecao";
+  const formScores = [
+    ...scores.filter((score) => score.category !== "accord"),
+    ...parseAccords(accords),
+  ];
 
   return (
     <div className={styles.page}>
@@ -304,6 +334,28 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
           <div className={styles.sectionTitle}>
             <span>04</span>
             <div>
+              <h2>Principais acordes</h2>
+              <p>Escreva um acorde por linha, no formato nome: intensidade.</p>
+            </div>
+          </div>
+          <div className={styles.fields}>
+            <label className={styles.full}>
+              Acordes principais
+              <textarea
+                rows={6}
+                value={accords}
+                onChange={(event) => setAccords(event.target.value)}
+                placeholder={"citrico: 95\ncaramelo: 84\ndoce: 78"}
+              />
+              <small>Use nomes em pt-BR na tela; a intensidade vai de 0 a 100.</small>
+            </label>
+          </div>
+        </section>
+
+        <section className={styles.section}>
+          <div className={styles.sectionTitle}>
+            <span>05</span>
+            <div>
               <h2>Leitura de uso</h2>
               <p>Use percentuais de 0 a 100 ou deixe sem informar.</p>
             </div>
@@ -337,7 +389,7 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 </div>
               </fieldset>
             ))}
-            <input type="hidden" name="scores" value={JSON.stringify(scores)} />
+            <input type="hidden" name="scores" value={JSON.stringify(formScores)} />
           </div>
         </section>
 
