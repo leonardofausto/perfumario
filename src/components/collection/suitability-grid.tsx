@@ -1,5 +1,6 @@
 import {
   BriefcaseBusiness,
+  Building2,
   Clock3,
   Coffee,
   Flower2,
@@ -15,6 +16,7 @@ import {
 import type { ComponentType } from "react";
 
 import {
+  ENVIRONMENT_METRICS,
   OCCASION_METRICS,
   SEASON_METRICS,
   TIME_METRICS,
@@ -32,7 +34,7 @@ type Metric = {
 const groups: Array<{ category: ScoreCategory; title: string; metrics: Metric[] }> = [
   {
     category: "season",
-    title: "Clima e estações",
+    title: "Estações",
     metrics: [
       { key: SEASON_METRICS[0], label: "Primavera", icon: Flower2 },
       { key: SEASON_METRICS[1], label: "Verão", icon: Sun },
@@ -44,12 +46,12 @@ const groups: Array<{ category: ScoreCategory; title: string; metrics: Metric[] 
     category: "occasion",
     title: "Ocasiões",
     metrics: [
-      { key: OCCASION_METRICS[0], label: "Trabalho", icon: BriefcaseBusiness },
+      { key: OCCASION_METRICS[0], label: "Academia", icon: Sparkles },
       { key: OCCASION_METRICS[1], label: "Casual", icon: Coffee },
       { key: OCCASION_METRICS[2], label: "Encontro", icon: Sparkles },
-      { key: OCCASION_METRICS[3], label: "Formal", icon: UsersRound },
-      { key: OCCASION_METRICS[4], label: "Festa", icon: PartyPopper },
-      { key: OCCASION_METRICS[5], label: "Ar livre", icon: Trees },
+      { key: OCCASION_METRICS[3], label: "Festa", icon: PartyPopper },
+      { key: OCCASION_METRICS[4], label: "Formal", icon: UsersRound },
+      { key: OCCASION_METRICS[5], label: "Trabalho", icon: BriefcaseBusiness },
     ],
   },
   {
@@ -59,7 +61,15 @@ const groups: Array<{ category: ScoreCategory; title: string; metrics: Metric[] 
       { key: TIME_METRICS[0], label: "Manhã", icon: Sun },
       { key: TIME_METRICS[1], label: "Tarde", icon: Sunset },
       { key: TIME_METRICS[2], label: "Noite", icon: MoonStar },
-      { key: TIME_METRICS[3], label: "Madrugada", icon: Clock3 },
+      { key: TIME_METRICS[3], label: "Dia Inteiro", icon: Clock3 },
+    ],
+  },
+  {
+    category: "environment",
+    title: "Ambiente",
+    metrics: [
+      { key: ENVIRONMENT_METRICS[0], label: "Ar livre", icon: Trees },
+      { key: ENVIRONMENT_METRICS[1], label: "Fechado", icon: Building2 },
     ],
   },
 ];

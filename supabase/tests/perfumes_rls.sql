@@ -107,7 +107,7 @@ begin
 
   if bucket_is_private is distinct from true
     or bucket_limit <> 5242880
-    or bucket_mime_types <> array['image/jpeg', 'image/png', 'image/webp'] then
+    or bucket_mime_types <> array['image/jpeg', 'image/png', 'image/avif', 'image/webp'] then
     raise exception 'Private perfume image bucket configuration is invalid';
   end if;
 

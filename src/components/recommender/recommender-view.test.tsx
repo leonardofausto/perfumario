@@ -8,10 +8,19 @@ import { RecommenderView } from "./recommender-view";
 
 const perfumes: PerfumeSummary[] = [
   {
+    launchYear: null,
+    categoryType: null,
+    audience: null,
+    intensity: null,
+    sweetness: null,
+    freshness: null,
+    elegance: null,
+    sensuality: null,
+    profileTags: [],
     id: "one",
     brand: "Marca",
     name: "Persistido",
-    concentration: "other",
+    concentration: "unknown",
     bottleFormat: "full_bottle",
     inspirationKind: "original",
     inspiredBy: null,

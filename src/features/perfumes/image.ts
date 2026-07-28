@@ -5,6 +5,12 @@ import { createServerSupabase } from "@/lib/supabase/server";
 import { perfumeImageSchema } from "./schema";
 
 const BUCKET = "perfume-images";
+const EXTENSIONS_BY_MIME = {
+  "image/avif": "avif",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+} as const;
 
 export async function uploadPerfumeCover(input: {
   userId: string;
@@ -13,15 +19,16 @@ export async function uploadPerfumeCover(input: {
 }): Promise<{ imagePath: string }> {
   const parsed = perfumeImageSchema.safeParse(input.file);
 
-  if (!parsed.success || parsed.data.type !== "image/webp") {
-    throw new Error("Imagem inválida. Converta a capa para WebP antes do envio.");
+  if (!parsed.success) {
+    throw new Error("Imagem inválida. Use JPG, PNG, AVIF ou WebP.");
   }
 
-  const imagePath = `${input.userId}/${input.perfumeId}/cover.webp`;
+  const extension = EXTENSIONS_BY_MIME[parsed.data.type as keyof typeof EXTENSIONS_BY_MIME];
+  const imagePath = `${input.userId}/${input.perfumeId}/cover.${extension}`;
   const supabase = await createServerSupabase();
   const { error } = await supabase.storage.from(BUCKET).upload(imagePath, parsed.data, {
     cacheControl: "3600",
-    contentType: "image/webp",
+    contentType: parsed.data.type,
     upsert: true,
   });
 

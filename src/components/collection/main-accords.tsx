@@ -3,16 +3,16 @@ import type { PerfumeScore } from "@/features/perfumes/types";
 import styles from "./detail.module.css";
 
 const accordLabels: Record<string, string> = {
-  amber: "Âmbar",
-  ambar: "Âmbar",
-  aromatic: "Aromático",
-  aromatico: "Aromático",
-  aquatico: "Aquático",
+  amber: "Ambar",
+  ambar: "Ambar",
+  aromatic: "Aromatico",
+  aromatico: "Aromatico",
+  aquatico: "Aquatico",
   baunilha: "Baunilha",
   caramel: "Caramelo",
   caramelo: "Caramelo",
-  citrus: "Cítrico",
-  citrico: "Cítrico",
+  citrus: "Citrico",
+  citrico: "Citrico",
   floral: "Floral",
   fresh: "Fresco",
   fresco: "Fresco",
@@ -33,25 +33,25 @@ const accordColors: Record<string, string> = {
   ambar: "#a76d2b",
   aromatic: "#66885d",
   aromatico: "#66885d",
-  aquatico: "#8fd7e4",
-  baunilha: "#ead7a0",
-  caramel: "#c98c45",
-  caramelo: "#c98c45",
-  citrus: "#f2b632",
-  citrico: "#f2b632",
-  floral: "#f49abc",
-  fresh: "#b8eef2",
-  fresco: "#b8eef2",
-  frutado: "#ff8165",
-  fruity: "#ff8165",
-  musk: "#e8dce6",
-  musky: "#e8dce6",
-  spicy: "#b75a36",
-  doce: "#d97895",
-  sweet: "#d97895",
-  vanilla: "#ead7a0",
-  verde: "#079323",
-  woody: "#b79776",
+  aquatico: "#387888",
+  baunilha: "#9a7628",
+  caramel: "#a86925",
+  caramelo: "#a86925",
+  citrus: "#a66f13",
+  citrico: "#a66f13",
+  floral: "#9b5d65",
+  fresh: "#3e7080",
+  fresco: "#3e7080",
+  frutado: "#a95845",
+  fruity: "#a95845",
+  musk: "#74516c",
+  musky: "#74516c",
+  spicy: "#9b563c",
+  doce: "#a45570",
+  sweet: "#a45570",
+  vanilla: "#9a7628",
+  verde: "#315d46",
+  woody: "#7b6249",
 };
 
 function normalize(value: string) {
@@ -70,7 +70,7 @@ function labelFor(metricKey: string) {
 
 function colorFor(metricKey: string) {
   const key = normalize(metricKey);
-  return accordColors[key] ?? "#887d6f";
+  return accordColors[key] ?? "#746958";
 }
 
 export function MainAccords({ scores }: { scores: PerfumeScore[] }) {
@@ -99,7 +99,8 @@ export function MainAccords({ scores }: { scores: PerfumeScore[] }) {
                 width: `${value}%`,
               }}
             >
-              {label}
+              <span>{label}</span>
+              <strong>{value}%</strong>
             </span>
           </div>
         );

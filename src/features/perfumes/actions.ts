@@ -22,6 +22,15 @@ export type PerfumeActionFields = {
   olfactoryFamilies: string;
   notes: string;
   scores: string;
+  launchYear: string;
+  categoryType: string;
+  audience: string;
+  intensity: string;
+  sweetness: string;
+  freshness: string;
+  elegance: string;
+  sensuality: string;
+  profileTags: string;
 };
 
 function text(formData: FormData, key: keyof PerfumeActionFields) {
@@ -37,6 +46,11 @@ function json(value: string, fallback: unknown) {
   }
 }
 
+function nullableInteger(value: string) {
+  const trimmed = value.trim();
+  return trimmed === "" ? null : Number(trimmed);
+}
+
 function fieldsFrom(formData: FormData): PerfumeActionFields {
   return {
     brand: text(formData, "brand"),
@@ -49,6 +63,15 @@ function fieldsFrom(formData: FormData): PerfumeActionFields {
     olfactoryFamilies: text(formData, "olfactoryFamilies"),
     notes: text(formData, "notes"),
     scores: text(formData, "scores"),
+    launchYear: text(formData, "launchYear"),
+    categoryType: text(formData, "categoryType"),
+    audience: text(formData, "audience"),
+    intensity: text(formData, "intensity"),
+    sweetness: text(formData, "sweetness"),
+    freshness: text(formData, "freshness"),
+    elegance: text(formData, "elegance"),
+    sensuality: text(formData, "sensuality"),
+    profileTags: text(formData, "profileTags"),
   };
 }
 
@@ -60,6 +83,15 @@ function parseForm(formData: FormData) {
     olfactoryFamilies: json(fields.olfactoryFamilies, []),
     notes: json(fields.notes, {}),
     scores: json(fields.scores, []),
+    launchYear: nullableInteger(fields.launchYear),
+    categoryType: fields.categoryType,
+    audience: fields.audience,
+    intensity: nullableInteger(fields.intensity),
+    sweetness: nullableInteger(fields.sweetness),
+    freshness: nullableInteger(fields.freshness),
+    elegance: nullableInteger(fields.elegance),
+    sensuality: nullableInteger(fields.sensuality),
+    profileTags: json(fields.profileTags, []),
   });
 
   return { fields, parsed };
@@ -76,6 +108,15 @@ function rpcPayload(userId: string, perfume: PerfumeFormInput) {
     p_inspiration_kind: perfume.inspirationKind,
     p_inspired_by: perfume.inspiredBy,
     p_olfactory_families: perfume.olfactoryFamilies,
+    p_launch_year: perfume.launchYear,
+    p_category_type: perfume.categoryType,
+    p_audience: perfume.audience,
+    p_intensity: perfume.intensity,
+    p_sweetness: perfume.sweetness,
+    p_freshness: perfume.freshness,
+    p_elegance: perfume.elegance,
+    p_sensuality: perfume.sensuality,
+    p_profile_tags: perfume.profileTags,
     p_notes: Object.entries(perfume.notes).flatMap(([layer, notes]) =>
       notes.map((note, displayOrder) => ({
         layer,

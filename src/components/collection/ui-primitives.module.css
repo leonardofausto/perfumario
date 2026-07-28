@@ -1,0 +1,186 @@
+.field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  color: #4f4941;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.fieldHeader {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fieldHeader span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.fieldHeader strong {
+  flex: 0 0 auto;
+  color: #1e513b;
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.fieldControl {
+  display: block;
+  min-width: 0;
+}
+
+.field input {
+  width: 100%;
+  border: 1px solid #d8cfc2;
+  border-radius: 8px;
+  background: #fff;
+  color: #24211d;
+  font: inherit;
+  font-weight: 500;
+  outline: none;
+  padding: 10px 11px;
+}
+
+.field input:focus-visible {
+  border-color: #1e513b;
+  box-shadow: 0 0 0 3px rgba(30, 81, 59, 0.1);
+}
+
+.fieldTrack {
+  display: block;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ece7df;
+}
+
+.fieldFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1e513b, #587766);
+}
+
+.error {
+  color: #9b3030;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.bar {
+  display: grid;
+  gap: 7px;
+}
+
+.barHeader,
+.emptyMetric,
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.barLabel,
+.emptyMetric strong,
+.chip strong {
+  min-width: 0;
+  color: #24211d;
+  font-size: 0.78rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.barValue,
+.emptyMetric span,
+.chip span {
+  flex: 0 0 auto;
+  color: #6c645a;
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ece7df;
+}
+
+.fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #1e513b;
+}
+
+.emptyMetric,
+.chip {
+  min-height: 38px;
+  border: 1px solid #e2dace;
+  border-radius: 8px;
+  background: #fffdf9;
+  padding: 8px 10px;
+}
+
+.tagInput {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tag {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  border: 1px solid #c8baaa;
+  border-left: 3px solid #9a6b3f;
+  border-radius: 8px;
+  background: #fffdf9;
+  color: #24211d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  padding: 6px 7px 6px 10px;
+}
+
+.tag button {
+  display: grid;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: #edf4ee;
+  color: #1e513b;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(30, 81, 59, 0.12);
+}
+
+.tag button:hover {
+  background: #dbe8df;
+}
+
+.tag button:focus-visible {
+  outline: 2px solid #1e513b;
+  outline-offset: 2px;
+}

@@ -66,7 +66,7 @@
 }
 
 .heroFallback span {
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 2.2rem;
 }
 
@@ -89,35 +89,17 @@
 .heroCopy h1 {
   max-width: 690px;
   margin: 9px 0 14px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 500;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
   line-height: 0.98;
 }
 
-.identityMeta,
-.heroActions,
 .familyList {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-.identityMeta span {
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 6px 10px;
-  color: var(--muted);
-  font-size: 0.74rem;
-  font-weight: 700;
-}
-
-.inspiration {
-  margin: 14px 0 0;
-  color: var(--green);
-  font-size: 0.84rem;
-  font-weight: 750;
 }
 
 .familyList {
@@ -130,20 +112,48 @@
   border-radius: 999px;
   color: #fff;
   font-size: 0.75rem;
-  font-weight: 750;
+  font-weight: 700;
   padding: 7px 11px;
 }
 
 .description {
   max-width: 62ch;
-  margin: 24px 0 0;
+  margin: 0;
   color: #4f4a43;
   font-size: 1rem;
   line-height: 1.75;
 }
 
-.heroActions {
-  margin-top: 27px;
+.essentialMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+  margin: 22px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+}
+
+.essentialMeta div,
+.technicalList div {
+  min-width: 0;
+}
+
+.essentialMeta dt,
+.technicalList dt {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.essentialMeta dd,
+.technicalList dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .favoriteButton,
@@ -157,7 +167,7 @@
   border-radius: 9px;
   padding: 0 15px;
   font-size: 0.82rem;
-  font-weight: 750;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -203,7 +213,7 @@
 
 .dialog h2 {
   margin: 0 34px 8px 0;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 500;
 }
@@ -240,7 +250,7 @@
   border-radius: 8px;
   background: #fff;
   padding: 0 14px;
-  font-weight: 750;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -263,7 +273,7 @@
 
 .sectionHeading h2 {
   margin: 8px 0 10px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(1.65rem, 3vw, 2.4rem);
   font-weight: 500;
 }
@@ -279,12 +289,12 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 7px;
+  gap: 5px;
 }
 
 .pyramidLayer {
   box-sizing: border-box;
-  padding: 17px 24px;
+  padding: 13px 22px;
   color: #fff;
   text-align: center;
 }
@@ -328,80 +338,110 @@
 .accordList {
   display: grid;
   align-content: start;
-  gap: 0;
-  width: min(100%, 430px);
+  gap: 6px;
+  width: min(100%, 520px);
 }
 
 .accordRow {
-  min-height: 28px;
+  min-height: 32px;
   overflow: hidden;
 }
 
 .accordBar {
   display: flex;
+  height: 32px;
   min-width: 34%;
-  height: 28px;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 10px;
   border-radius: 0 7px 7px 0;
   color: #ffffff;
   font-size: 0.84rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
+  padding: 0 10px 0 12px;
+  text-shadow: 0 1px 2px rgba(22, 18, 14, 0.35);
   text-transform: lowercase;
+}
+
+.accordBar strong {
+  font-size: 0.72rem;
+  font-weight: 800;
 }
 
 .performanceSection {
   background: #f3f6f3;
 }
 
-.radarLayout {
+.profileColumns {
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) minmax(170px, 0.7fr);
-  align-items: center;
-  gap: 30px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
 }
 
-.radar {
-  width: min(100%, 340px);
-  margin: auto;
-  overflow: visible;
+.profileColumns h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
+  font-weight: 500;
 }
 
-.radarGrid {
-  fill: rgba(255, 255, 255, 0.82);
-  stroke: #aebdaf;
-  stroke-width: 1.2;
-}
-
-.radarGuide {
-  fill: none;
-  stroke: #cfdbd1;
-  stroke-width: 0.7;
-}
-
-.radarValue {
-  fill: rgba(30, 81, 59, 0.28);
-  stroke: var(--green);
-  stroke-width: 2;
-}
-
-.radarDot {
-  fill: var(--green);
-}
-
-.metricList {
+.performanceBars {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   padding: 0;
-  color: var(--muted);
-  font-size: 0.82rem;
   list-style: none;
 }
 
-.metricList strong {
+.performanceItem,
+.performanceItemEmpty {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  padding: 12px;
+}
+
+.performanceItemEmpty {
+  color: var(--muted);
+}
+
+.performanceHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.performanceHeader strong {
   color: var(--ink);
+}
+
+.performanceHeader span {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.performanceItemEmpty .performanceHeader span {
+  color: var(--muted);
+}
+
+.performanceTrack {
+  display: block;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e6e0d7;
+}
+
+.performanceFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1e513b, #8a6a38);
 }
 
 .suitabilityGroups {
@@ -411,7 +451,7 @@
 
 .suitabilityGroups h3 {
   margin: 0 0 12px;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.08rem;
   font-weight: 500;
 }
@@ -458,10 +498,42 @@
   background: var(--green);
 }
 
+.technicalSection {
+  grid-template-columns: minmax(220px, 0.3fr) minmax(0, 0.7fr);
+  align-items: center;
+  background: #f8f5ef;
+}
+
+.technicalSection .sectionHeading h2 {
+  font-size: clamp(1.45rem, 2.15vw, 1.95rem);
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.technicalList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px 28px;
+  margin: 0;
+}
+
+.technicalList dd {
+  font-size: 0.95rem;
+}
+
 @media (max-width: 800px) {
   .hero,
-  .section {
+  .section,
+  .profileColumns {
     grid-template-columns: 1fr;
+  }
+
+  .technicalSection {
+    align-items: start;
+  }
+
+  .technicalSection .sectionHeading h2 {
+    white-space: normal;
   }
 
   .heroImage {
@@ -475,8 +547,12 @@
     padding: 26px 20px;
   }
 
-  .radarLayout,
   .suitabilityGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .essentialMeta,
+  .technicalList {
     grid-template-columns: 1fr;
   }
 

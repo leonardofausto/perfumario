@@ -47,6 +47,15 @@ const perfumeRows = [
     olfactory_families: ["Amadeirado"],
     image_path: "user-1/perfume-2/cover.webp",
     is_favorite: false,
+    launch_year: 2022,
+    category_type: "designer",
+    audience: "unissex",
+    intensity: 80,
+    sweetness: 25,
+    freshness: 0,
+    elegance: null,
+    sensuality: 55,
+    profile_tags: ["versatil"],
   },
   {
     id: "perfume-1",
@@ -59,6 +68,15 @@ const perfumeRows = [
     olfactory_families: ["Cítrico"],
     image_path: "user-1/perfume-1/cover.webp",
     is_favorite: true,
+    launch_year: null,
+    category_type: null,
+    audience: null,
+    intensity: null,
+    sweetness: null,
+    freshness: null,
+    elegance: null,
+    sensuality: null,
+    profile_tags: [],
   },
 ];
 
@@ -86,6 +104,12 @@ describe("perfume queries", () => {
 
     expect(result.map(({ id }) => id)).toEqual(["perfume-1", "perfume-2"]);
     expect(result[0].imageUrl).toBe("https://signed/brisa");
+    expect(result[1]).toMatchObject({
+      launchYear: 2022,
+      freshness: 0,
+      elegance: null,
+      profileTags: ["versatil"],
+    });
     expect(perfumesQuery.eq).toHaveBeenCalledWith("user_id", "user-1");
     expect(createSignedUrls).toHaveBeenCalledWith(
       [
@@ -143,6 +167,17 @@ describe("perfume queries", () => {
     expect(result?.scores).toEqual([
       { category: "performance", metricKey: "fixacao", score: 80 },
     ]);
+    expect(result).toMatchObject({
+      launchYear: 2022,
+      categoryType: "designer",
+      audience: "unissex",
+      intensity: 80,
+      sweetness: 25,
+      freshness: 0,
+      elegance: null,
+      sensuality: 55,
+      profileTags: ["versatil"],
+    });
     expect(result?.imageUrl).toBe("https://signed/detail");
     expect(parent.eq).toHaveBeenCalledWith("user_id", "user-1");
   });
@@ -186,5 +221,59 @@ describe("perfume queries", () => {
         }),
       ],
     });
+  });
+
+  it("keeps the dashboard available when remodel columns are not migrated yet", async () => {
+    const allCount = query({ count: 4, data: null, error: null });
+    const favoriteCount = query({ count: 2, data: null, error: null });
+    const recentWithRemodelColumns = query({
+      data: null,
+      error: {
+        code: "42703",
+        message: "column perfumes.launch_year does not exist",
+      },
+    });
+    const recentLegacyColumns = query({
+      data: [
+        {
+          id: "legacy",
+          brand: "Alfa",
+          name: "Legado",
+          concentration: "eau_de_parfum",
+          bottle_format: "full_bottle",
+          inspiration_kind: "original",
+          inspired_by: null,
+          olfactory_families: ["Amadeirado"],
+          image_path: null,
+          is_favorite: false,
+        },
+      ],
+      error: null,
+    });
+    const queue = [
+      allCount,
+      favoriteCount,
+      recentWithRemodelColumns,
+      recentLegacyColumns,
+    ];
+    mocks.createServerSupabase.mockResolvedValue({
+      from: vi.fn(() => queue.shift()),
+      storage: {
+        from: vi.fn(() => ({
+          createSignedUrls: vi.fn(),
+        })),
+      },
+    });
+
+    const result = await getOwnPerfumeDashboard();
+
+    expect(result.recent).toEqual([
+      expect.objectContaining({
+        id: "legacy",
+        launchYear: null,
+        intensity: null,
+        profileTags: [],
+      }),
+    ]);
   });
 });

@@ -15,12 +15,12 @@ describe("private perfume images", () => {
     vi.clearAllMocks();
   });
 
-  it("uploads a WebP cover to the canonical owned path", async () => {
+  it("uploads a cover with the original image format", async () => {
     const upload = vi.fn().mockResolvedValue({ error: null });
     mocks.createServerSupabase.mockResolvedValue({
       storage: { from: vi.fn(() => ({ upload })) },
     });
-    const file = new File(["cover"], "cover.webp", { type: "image/webp" });
+    const file = new File(["cover"], "cover.avif", { type: "image/avif" });
 
     const result = await uploadPerfumeCover({
       userId: "user-1",
@@ -29,13 +29,13 @@ describe("private perfume images", () => {
     });
 
     expect(result).toEqual({
-      imagePath: "user-1/perfume-1/cover.webp",
+      imagePath: "user-1/perfume-1/cover.avif",
     });
     expect(upload).toHaveBeenCalledWith(
-      "user-1/perfume-1/cover.webp",
+      "user-1/perfume-1/cover.avif",
       file,
       expect.objectContaining({
-        contentType: "image/webp",
+        contentType: "image/avif",
         upsert: true,
       }),
     );

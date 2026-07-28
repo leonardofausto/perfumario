@@ -1,8 +1,9 @@
 "use client";
 
-import { ArrowLeft, ImageUp, Save } from "lucide-react";
+import { ArrowLeft, LoaderCircle, Save } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useId, useMemo, useState } from "react";
 
 import {
   createPerfumeAction,
@@ -10,7 +11,12 @@ import {
   type PerfumeActionFields,
 } from "@/features/perfumes/actions";
 import {
+  AUDIENCE_OPTIONS,
+  CATEGORY_TYPE_OPTIONS,
+  ENVIRONMENT_METRICS,
   OCCASION_METRICS,
+  PERCENT_MAX,
+  PERCENT_MIN,
   PERFORMANCE_METRICS,
   SEASON_METRICS,
   TIME_METRICS,
@@ -25,6 +31,7 @@ import type {
 import type { ActionState } from "@/lib/auth/types";
 
 import styles from "./form.module.css";
+import { PercentageBar, TagInput } from "./ui-primitives";
 
 type ScoreGroup = {
   category: Exclude<ScoreCategory, "accord">;
@@ -33,22 +40,23 @@ type ScoreGroup = {
   labels: Record<string, string>;
 };
 
-const scoreGroups: ScoreGroup[] = [
-  {
-    category: "performance",
-    title: "Desempenho",
-    metrics: PERFORMANCE_METRICS,
-    labels: {
-      fixacao: "Fixação",
-      projecao: "Projeção",
-      rastro: "Rastro",
-      versatilidade: "Versatilidade",
-      presenca: "Presença",
-    },
+const performanceGroup: ScoreGroup = {
+  category: "performance",
+  title: "Desempenho",
+  metrics: PERFORMANCE_METRICS,
+  labels: {
+    fixacao: "Fixação",
+    projecao: "Projeção",
+    rastro: "Rastro",
+    versatilidade: "Versatilidade",
+    presenca: "Presença",
   },
+};
+
+const usageGroups: ScoreGroup[] = [
   {
     category: "season",
-    title: "Clima e estações",
+    title: "Estações",
     metrics: SEASON_METRICS,
     labels: {
       primavera: "Primavera",
@@ -62,12 +70,12 @@ const scoreGroups: ScoreGroup[] = [
     title: "Ocasiões",
     metrics: OCCASION_METRICS,
     labels: {
-      trabalho: "Trabalho",
+      ar_livre: "Academia",
       casual: "Casual",
       encontro: "Encontro",
-      formal: "Formal",
       festa: "Festa",
-      ar_livre: "Ar livre",
+      formal: "Formal",
+      trabalho: "Trabalho",
     },
   },
   {
@@ -78,16 +86,46 @@ const scoreGroups: ScoreGroup[] = [
       manha: "Manhã",
       tarde: "Tarde",
       noite: "Noite",
-      madrugada: "Madrugada",
+      madrugada: "Dia Inteiro",
+    },
+  },
+  {
+    category: "environment",
+    title: "Ambiente",
+    metrics: ENVIRONMENT_METRICS,
+    labels: {
+      ar_livre: "Ar livre",
+      fechado: "Fechado",
     },
   },
 ];
+
+const scoreGroups = [performanceGroup, ...usageGroups];
 
 const noteLabels: Record<NoteLayer, string> = {
   top: "Notas de saída",
   heart: "Notas de coração",
   base: "Notas de fundo",
 };
+
+const noteLayerMeta: Record<NoteLayer, { step: string; hint: string }> = {
+  top: { step: "Saída", hint: "Primeira impressão" },
+  heart: { step: "Coração", hint: "Corpo da fragrância" },
+  base: { step: "Fundo", hint: "Persistência na pele" },
+};
+
+const sensoryLabels = {
+  intensity: "Intensidade",
+  sweetness: "Docura",
+  freshness: "Frescor",
+  elegance: "Elegância",
+  sensuality: "Sensualidade",
+} as const;
+
+type SensoryField = keyof typeof sensoryLabels;
+type SensoryValues = Record<SensoryField, number | null>;
+
+const sensoryOrder = Object.keys(sensoryLabels) as SensoryField[];
 
 function list(value: string) {
   return value
@@ -103,12 +141,13 @@ function parseAccords(value: string): PerfumeScore[] {
     .filter(Boolean)
     .map((line) => {
       const [name = "", rawScore = ""] = line.split(":");
-      const scoreValue = Number(rawScore.trim());
+      const scoreText = rawScore.trim();
+      const scoreValue = Number(scoreText);
 
       return {
         category: "accord" as const,
         metricKey: name.trim(),
-        score: Number.isInteger(scoreValue) ? scoreValue : null,
+        score: scoreText && Number.isInteger(scoreValue) ? scoreValue : null,
       };
     })
     .filter((score) => score.metricKey);
@@ -119,6 +158,10 @@ function formatAccords(scores: PerfumeScore[]) {
     .filter((score) => score.category === "accord")
     .map((score) => `${score.metricKey}: ${score.score ?? ""}`)
     .join("\n");
+}
+
+function sortAccords(scores: PerfumeScore[]) {
+  return [...scores].sort((left, right) => (right.score ?? -1) - (left.score ?? -1));
 }
 
 function defaultScores(perfume?: PerfumeDetail) {
@@ -135,8 +178,85 @@ function defaultScores(perfume?: PerfumeDetail) {
 }
 
 function errorFor(state: ActionState<PerfumeActionFields>, field: keyof PerfumeActionFields) {
-  const message = state.fieldErrors?.[field]?.[0];
-  return message ? <span className={styles.fieldError}>{message}</span> : null;
+  return state.fieldErrors?.[field]?.[0];
+}
+
+function SectionTitle({
+  step,
+  title,
+  description,
+}: {
+  step: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className={styles.sectionTitle}>
+      <span>{step}</span>
+      <div className={styles.sectionTitleText}>
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function MetricLineField({
+  label,
+  name,
+  value,
+  onChange,
+}: {
+  label: string;
+  name: string;
+  value: number | null;
+  onChange: (value: number | null) => void;
+}) {
+  const inputId = useId();
+  const safeValue =
+    value === null ? null : Math.min(PERCENT_MAX, Math.max(PERCENT_MIN, value));
+  const formatted = `${safeValue ?? 0}%`;
+
+  return (
+    <label className={styles.metricLine} htmlFor={inputId}>
+      <span className={styles.metricLineName}>{label}</span>
+      <span className={styles.metricLineTrack} aria-hidden="true">
+        <span
+          className={styles.metricLineFill}
+          style={{ width: `${safeValue ?? 0}%` }}
+        />
+      </span>
+      <span className={styles.metricLineValue}>
+        <input
+          id={inputId}
+          name={name}
+          type="number"
+          inputMode="numeric"
+          autoComplete="off"
+          min={PERCENT_MIN}
+          max={PERCENT_MAX}
+          step={1}
+          value={value ?? ""}
+          aria-label={`${label} (%)`}
+          placeholder={formatted}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            onChange(nextValue === "" ? null : Number(nextValue));
+          }}
+        />
+        <span className={styles.metricLineReadout} aria-hidden="true">
+          {formatted}
+        </span>
+      </span>
+    </label>
+  );
+}
+
+function scoreValue(scores: PerfumeScore[], category: ScoreCategory, metricKey: string) {
+  return (
+    scores.find((score) => score.category === category && score.metricKey === metricKey)
+      ?.score ?? null
+  );
 }
 
 export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
@@ -149,7 +269,15 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   const [inspirationKind, setInspirationKind] = useState<InspirationKind>(
     perfume?.inspirationKind ?? "original",
   );
-  const [families, setFamilies] = useState(perfume?.olfactoryFamilies.join(", ") ?? "");
+  const [inspiredBy, setInspiredBy] = useState(perfume?.inspiredBy ?? "");
+  const [families, setFamilies] = useState(perfume?.olfactoryFamilies ?? []);
+  const [sensoryValues, setSensoryValues] = useState<SensoryValues>({
+    intensity: perfume?.intensity ?? null,
+    sweetness: perfume?.sweetness ?? null,
+    freshness: perfume?.freshness ?? null,
+    elegance: perfume?.elegance ?? null,
+    sensuality: perfume?.sensuality ?? null,
+  });
   const [notes, setNotes] = useState<Record<NoteLayer, string>>({
     top: perfume?.notes.top.join(", ") ?? "",
     heart: perfume?.notes.heart.join(", ") ?? "",
@@ -159,85 +287,132 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   const [scores, setScores] = useState<PerfumeScore[]>(initialScores);
   const [accords, setAccords] = useState(formatAccords(perfume?.scores ?? []));
 
-  function setScore(category: ScoreCategory, metricKey: string, value: string) {
+  function setScore(category: ScoreCategory, metricKey: string, value: number | null) {
     setScores((current) =>
       current.map((score) =>
         score.category === category && score.metricKey === metricKey
-          ? { ...score, score: value === "" ? null : Number(value) }
+          ? { ...score, score: value }
           : score,
       ),
     );
   }
 
+  function setSensory(field: SensoryField, value: number | null) {
+    setSensoryValues((current) => ({ ...current, [field]: value }));
+  }
+
   const backHref = perfume ? `/colecao/${perfume.id}` : "/colecao";
-  const formScores = [
-    ...scores.filter((score) => score.category !== "accord"),
-    ...parseAccords(accords),
-  ];
+  const accordScores = sortAccords(parseAccords(accords));
+  const formScores = [...scores, ...accordScores];
+  const submitLabel = perfume ? "Salvar alterações" : "Adicionar perfume";
 
   return (
     <div className={styles.page}>
-      <Link href={backHref} className={styles.backLink}>
-        <ArrowLeft size={17} />
-        Voltar
-      </Link>
+      <div className={styles.topbar}>
+        <Link href={backHref} className={styles.backLink}>
+          <ArrowLeft size={16} aria-hidden="true" />
+          Voltar
+        </Link>
+      </div>
 
       <header className={styles.header}>
-        <span>{perfume ? "Atualizar registro" : "Nova fragrância"}</span>
-        <h1>{perfume ? `Editar ${perfume.name}` : "Adicionar perfume"}</h1>
-        <p>Registre somente o que você conhece; campos percentuais podem ficar vazios.</p>
+        <div>
+          <span className={styles.topbarStatus}>
+            {perfume ? "Editar cadastro" : "Novo cadastro"}
+          </span>
+          <h1>Fragrância</h1>
+        </div>
       </header>
 
-      <form action={formAction} className={styles.form}>
-        <section className={styles.section}>
-          <div className={styles.sectionTitle}>
-            <span>01</span>
-            <div>
-              <h2>Identidade</h2>
-              <p>Nome, formato e relação com outras fragrâncias.</p>
-            </div>
+      <div className={styles.editShell}>
+        <form action={formAction} className={styles.form}>
+        <section id="identidade" className={styles.section}>
+          <div className={styles.identityIntro}>
+            <SectionTitle
+              step="01"
+              title="Identidade e apresentação"
+              description="Dados principais da fragrância."
+            />
+            <label className={styles.identityCover}>
+              <input
+                className={styles.coverInput}
+                type="file"
+                name="image"
+                accept="image/jpeg,image/png,image/avif,image/webp"
+                aria-label="Imagem do perfume"
+              />
+              <span className={styles.identityCoverPreview}>
+                {perfume?.imageUrl ? (
+                  <Image
+                    src={perfume.imageUrl}
+                    alt={`Imagem atual de ${perfume.name}`}
+                    fill
+                    sizes="112px"
+                    unoptimized
+                  />
+                ) : (
+                  <span aria-hidden="true">{(perfume?.name ?? "P").slice(0, 1)}</span>
+                )}
+              </span>
+              <span className={styles.identityCoverCopy}>
+                <strong>Clique para mudar</strong>
+                <small>JPG, PNG, AVIF ou WebP</small>
+                <small>máximo de 5 MB.</small>
+              </span>
+            </label>
           </div>
-          <div className={styles.fields}>
-            <label>
+          <div className={`${styles.fields} ${styles.identityGrid}`}>
+            <label className={styles.identityBrand}>
               Marca
-              <input name="brand" defaultValue={perfume?.brand ?? ""} required />
-              {errorFor(state, "brand")}
+              <input name="brand" defaultValue={perfume?.brand ?? ""} autoComplete="off" />
+              {errorFor(state, "brand") ? (
+                <span className={styles.fieldError}>{errorFor(state, "brand")}</span>
+              ) : null}
             </label>
-            <label>
+            <label className={styles.identityName}>
               Nome do perfume
-              <input name="name" defaultValue={perfume?.name ?? ""} required />
-              {errorFor(state, "name")}
+              <input name="name" defaultValue={perfume?.name ?? ""} autoComplete="off" />
+              {errorFor(state, "name") ? (
+                <span className={styles.fieldError}>{errorFor(state, "name")}</span>
+              ) : null}
             </label>
-            <label>
+            <label className={styles.selectField}>
               Concentração
               <select
                 name="concentration"
-                defaultValue={perfume?.concentration ?? "eau_de_parfum"}
+                defaultValue={perfume?.concentration ?? "unknown"}
+                autoComplete="off"
               >
+                <option value="unknown">Não informado</option>
+                <option value="body_splash">Body Splash</option>
+                <option value="eau_de_cologne">Eau de Cologne (EDC)</option>
+                <option value="eau_de_parfum">Eau de Parfum (EDP)</option>
+                <option value="eau_de_toilette">Eau de Toilette (EDT)</option>
+                <option value="perfume_oil">Óleo Perfumado</option>
                 <option value="parfum">Parfum</option>
-                <option value="eau_de_parfum">Eau de parfum</option>
-                <option value="eau_de_toilette">Eau de toilette</option>
-                <option value="eau_de_cologne">Eau de cologne</option>
-                <option value="body_splash">Body splash</option>
-                <option value="perfume_oil">Óleo perfumado</option>
-                <option value="other">Outra</option>
               </select>
             </label>
-            <label>
-              Formato na estante
+            <label className={styles.selectField}>
+              Categoria
               <select
-                name="bottleFormat"
-                defaultValue={perfume?.bottleFormat ?? "full_bottle"}
+                name="categoryType"
+                defaultValue={perfume?.categoryType ?? ""}
+                autoComplete="off"
               >
-                <option value="full_bottle">Frasco inteiro</option>
-                <option value="decant">Decant</option>
+                <option value="">Não informado</option>
+                {CATEGORY_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </label>
-            <label>
+            <label className={styles.selectField}>
               Relação com outra fragrância
               <select
                 name="inspirationKind"
                 value={inspirationKind}
+                autoComplete="off"
                 onChange={(event) =>
                   setInspirationKind(event.target.value as InspirationKind)
                 }
@@ -247,77 +422,144 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 <option value="dupe">Dupe</option>
               </select>
             </label>
-            {inspirationKind !== "original" ? (
-              <label>
-                Perfume de referência
+            <label className={styles.referenceField}>
+              Perfume de referência
+              <input
+                name="inspiredBy"
+                value={inspiredBy}
+                autoComplete="off"
+                readOnly={inspirationKind === "original"}
+                aria-readonly={inspirationKind === "original"}
+                onChange={(event) => setInspiredBy(event.target.value)}
+              />
+              {errorFor(state, "inspiredBy") ? (
+                <span className={styles.fieldError}>{errorFor(state, "inspiredBy")}</span>
+              ) : null}
+            </label>
+            <div className={`${styles.full} ${styles.identityMetaGroup}`}>
+              <label className={styles.compactField}>
+                Ano de lançamento
                 <input
-                  name="inspiredBy"
-                  defaultValue={perfume?.inspiredBy ?? ""}
-                  required
+                  type="number"
+                  name="launchYear"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  min={1800}
+                  max={2200}
+                  defaultValue={perfume?.launchYear ?? ""}
                 />
-                {errorFor(state, "inspiredBy")}
               </label>
-            ) : (
-              <input type="hidden" name="inspiredBy" value="" />
-            )}
-          </div>
-        </section>
-
-        <section className={styles.section}>
-          <div className={styles.sectionTitle}>
-            <span>02</span>
-            <div>
-              <h2>Explicação e famílias</h2>
-              <p>O texto que aparecerá no detalhe da fragrância.</p>
+              <label className={styles.selectField}>
+                Formato na estante
+                <select
+                  name="bottleFormat"
+                  defaultValue={perfume?.bottleFormat ?? "full_bottle"}
+                  autoComplete="off"
+                >
+                  <option value="decant">Decant</option>
+                  <option value="full_bottle">Frasco</option>
+                </select>
+              </label>
+              <label className={styles.selectField}>
+                Público
+                <select name="audience" defaultValue={perfume?.audience ?? ""} autoComplete="off">
+                  <option value="">Não informado</option>
+                  {AUDIENCE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
-          </div>
-          <div className={styles.fields}>
-            <label className={styles.full}>
+            <label className={`${styles.full} ${styles.descriptionField}`}>
               Explicativo do perfume
               <textarea
                 name="description"
-                rows={5}
+                autoComplete="off"
+                rows={4}
                 defaultValue={perfume?.description ?? ""}
                 required
               />
-              {errorFor(state, "description")}
+              {errorFor(state, "description") ? (
+                <span className={styles.fieldError}>{errorFor(state, "description")}</span>
+              ) : null}
             </label>
-            <label className={styles.full}>
-              Famílias olfativas
-              <input
-                value={families}
-                onChange={(event) => setFamilies(event.target.value)}
-                placeholder="Amadeirado, especiado"
-                required
-              />
-              <small>Separe as famílias com vírgulas.</small>
-            </label>
-            <input type="hidden" name="olfactoryFamilies" value={JSON.stringify(list(families))} />
           </div>
         </section>
 
-        <fieldset className={styles.section} aria-label="Pirâmide olfativa">
-          <legend className={styles.sectionTitle}>
-            <span>03</span>
-            <span>
-              <strong>Pirâmide olfativa</strong>
-              <small>Separe cada nota com vírgulas.</small>
-            </span>
-          </legend>
-          <div className={styles.fields}>
-            {(Object.keys(noteLabels) as NoteLayer[]).map((layer) => (
-              <label key={layer}>
-                {noteLabels[layer]}
-                <textarea
-                  rows={3}
-                  value={notes[layer]}
-                  onChange={(event) =>
-                    setNotes((current) => ({ ...current, [layer]: event.target.value }))
-                  }
-                  required
-                />
-              </label>
-            ))}
+        <section
+          id="descricao"
+          className={`${styles.section} ${styles.fragranceSection}`}
+          role="group"
+          aria-label="Descrição da fragrância"
+        >
+          <SectionTitle
+            step="02"
+            title="Descrição da fragrância"
+            description="Composição e acordes olfativos."
+          />
+          <div className={styles.fragranceContent}>
+            <div className={`${styles.full} ${styles.familyField}`}>
+              <TagInput
+                label="Famílias olfativas"
+                name="olfactoryFamilies"
+                value={families}
+                onChange={setFamilies}
+              />
+            </div>
+            <div className={styles.fragranceGroup}>
+              <h3>Pirâmide olfativa</h3>
+              <div className={styles.notePyramid} aria-label="Pirâmide olfativa">
+                {(Object.keys(noteLabels) as NoteLayer[]).map((layer) => (
+                  <label className={styles.noteLayer} key={layer}>
+                    <span className={styles.noteLayerHeading}>
+                      <strong>{noteLayerMeta[layer].step}</strong>
+                      <small>{noteLayerMeta[layer].hint}</small>
+                    </span>
+                  <textarea
+                    aria-label={noteLabels[layer]}
+                    rows={5}
+                    autoComplete="off"
+                    value={notes[layer]}
+                    onChange={(event) =>
+                      setNotes((current) => ({ ...current, [layer]: event.target.value }))
+                    }
+                    required
+                  />
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className={styles.fragranceGroup}>
+              <h3>Acordes principais</h3>
+              <div className={styles.accordEditor}>
+                <label>
+                  <textarea
+                    aria-label="Acordes principais"
+                    rows={7}
+                    autoComplete="off"
+                    value={accords}
+                    onChange={(event) => setAccords(event.target.value)}
+                    placeholder={"citrico: 95\ncaramelo: 84\ndoce:"}
+                  />
+                  <small>Use um acorde por linha no formato nome: intensidade. Deixe a intensidade vazia quando não souber.</small>
+                </label>
+                <div className={styles.previewList} aria-label="Preview de acordes">
+                  {accordScores.length ? (
+                    accordScores.map((accord) => (
+                      <PercentageBar
+                        key={accord.metricKey}
+                        label={accord.metricKey}
+                        value={accord.score}
+                      />
+                    ))
+                  ) : (
+                    <p className={styles.emptyPreview}>Nenhum acorde informado.</p>
+                  )}
+                </div>
+              </div>
+            </div>
             <input
               type="hidden"
               name="notes"
@@ -327,106 +569,112 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 base: list(notes.base),
               })}
             />
-          </div>
-        </fieldset>
-
-        <section className={styles.section}>
-          <div className={styles.sectionTitle}>
-            <span>04</span>
-            <div>
-              <h2>Principais acordes</h2>
-              <p>Escreva um acorde por linha, no formato nome: intensidade.</p>
-            </div>
-          </div>
-          <div className={styles.fields}>
-            <label className={styles.full}>
-              Acordes principais
-              <textarea
-                rows={6}
-                value={accords}
-                onChange={(event) => setAccords(event.target.value)}
-                placeholder={"citrico: 95\ncaramelo: 84\ndoce: 78"}
-              />
-              <small>Use nomes em pt-BR na tela; a intensidade vai de 0 a 100.</small>
-            </label>
-          </div>
-        </section>
-
-        <section className={styles.section}>
-          <div className={styles.sectionTitle}>
-            <span>05</span>
-            <div>
-              <h2>Leitura de uso</h2>
-              <p>Use percentuais de 0 a 100 ou deixe sem informar.</p>
-            </div>
-          </div>
-          <div className={styles.scoreGroups}>
-            {scoreGroups.map((group) => (
-              <fieldset key={group.category} aria-label={group.title}>
-                <legend>{group.title}</legend>
-                <div className={styles.scoreGrid}>
-                  {group.metrics.map((metric) => {
-                    const score = scores.find(
-                      (item) =>
-                        item.category === group.category && item.metricKey === metric,
-                    );
-                    return (
-                      <label key={metric}>
-                        {group.labels[metric]} (%)
-                        <input
-                          type="number"
-                          min={0}
-                          max={100}
-                          step={1}
-                          value={score?.score ?? ""}
-                          onChange={(event) =>
-                            setScore(group.category, metric, event.target.value)
-                          }
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            ))}
             <input type="hidden" name="scores" value={JSON.stringify(formScores)} />
           </div>
         </section>
 
-        <section className={styles.section}>
+        <section
+          id="perfil"
+          className={styles.section}
+          role="group"
+          aria-label="Perfil da fragrância"
+        >
           <div className={styles.sectionTitle}>
-            <ImageUp size={21} />
-            <div>
-              <h2>Imagem</h2>
-              <p>Capa privada armazenada no Supabase.</p>
-            </div>
+            <span>04</span>
+            <span>
+              <strong>Perfil da fragrância</strong>
+              <small>Desempenho e percepção sensorial.</small>
+            </span>
           </div>
-          <label className={styles.upload}>
-            Imagem do perfume
-            <input
-              type="file"
-              name="image"
-              accept="image/webp"
-              aria-label="Imagem do perfume"
-            />
-            <small>WebP, até 5 MB. A imagem atual será mantida se nenhuma for escolhida.</small>
-          </label>
+          <div className={styles.profileMetricColumns}>
+            <section className={styles.metricLineGroup} role="group" aria-label="Desempenho">
+              <h3>Desempenho</h3>
+              <div className={styles.metricLineList}>
+                {performanceGroup.metrics.map((metric) => (
+                  <MetricLineField
+                    key={metric}
+                    label={performanceGroup.labels[metric]}
+                    name={`${performanceGroup.category}-${metric}`}
+                    value={scoreValue(scores, performanceGroup.category, metric)}
+                    onChange={(value) => setScore(performanceGroup.category, metric, value)}
+                  />
+                ))}
+              </div>
+            </section>
+            <section className={styles.metricLineGroup} role="group" aria-label="Perfil sensorial">
+              <h3>Perfil sensorial</h3>
+              <div className={styles.metricLineList}>
+                {sensoryOrder.map((field) => (
+                  <MetricLineField
+                    key={field}
+                    label={sensoryLabels[field]}
+                    name={field}
+                    value={sensoryValues[field]}
+                    onChange={(value) => setSensory(field, value)}
+                  />
+                ))}
+              </div>
+              <input type="hidden" name="profileTags" value="[]" />
+            </section>
+          </div>
         </section>
 
-        {state.message ? (
-          <p className={styles.formMessage} role="status">
-            {state.message}
-          </p>
-        ) : null}
+        <section id="uso" className={styles.section} role="group" aria-label="Quando usar">
+          <div className={styles.sectionTitle}>
+            <span>05</span>
+            <span>
+              <strong>Quando usar</strong>
+              <small>Ocasiões, clima, horários e ambientes ideais.</small>
+            </span>
+          </div>
+          <div className={styles.usageColumns}>
+            {[usageGroups.slice(0, 2), usageGroups.slice(2)].map((column, index) => (
+              <div className={styles.usageColumn} key={index === 0 ? "contexto" : "momento"}>
+                {column.map((group) => (
+                  <section
+                    key={group.category}
+                    className={styles.usageGroup}
+                    role="group"
+                    aria-label={group.title}
+                  >
+                    <h3>{group.title}</h3>
+                    <div className={styles.usageMetricList}>
+                      {group.metrics.map((metric) => (
+                        <MetricLineField
+                          key={metric}
+                          label={group.labels[metric]}
+                          name={`${group.category}-${metric}`}
+                          value={scoreValue(scores, group.category, metric)}
+                          onChange={(value) => setScore(group.category, metric, value)}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <p className={styles.formMessage} role="status" aria-live="polite">
+          {pending ? "Salvando ficha…" : state.message}
+        </p>
 
         <div className={styles.footer}>
-          <Link href={backHref}>Cancelar</Link>
-          <button type="submit" disabled={pending}>
-            <Save size={17} />
-            {pending ? "Salvando..." : perfume ? "Salvar alterações" : "Adicionar perfume"}
+          <Link href={backHref} className={styles.cancelAction}>
+            Cancelar
+          </Link>
+          <button type="submit" disabled={pending} aria-busy={pending}>
+            {pending ? (
+              <LoaderCircle className={styles.spinner} size={17} aria-hidden="true" />
+            ) : (
+              <Save size={17} aria-hidden="true" />
+            )}
+            {pending ? "Salvando…" : submitLabel}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

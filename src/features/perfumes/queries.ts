@@ -25,6 +25,15 @@ type PerfumeSummaryRow = {
   olfactory_families: string[];
   image_path: string | null;
   is_favorite: boolean;
+  launch_year: number | null;
+  category_type: string | null;
+  audience: string | null;
+  intensity: number | null;
+  sweetness: number | null;
+  freshness: number | null;
+  elegance: number | null;
+  sensuality: number | null;
+  profile_tags: string[] | null;
 };
 
 type PerfumeDetailRow = PerfumeSummaryRow & {
@@ -48,14 +57,97 @@ type ScoreRow = {
 };
 
 const SUMMARY_COLUMNS =
+  "id, brand, name, concentration, bottle_format, inspiration_kind, inspired_by, olfactory_families, image_path, is_favorite, launch_year, category_type, audience, intensity, sweetness, freshness, elegance, sensuality, profile_tags";
+const LEGACY_SUMMARY_COLUMNS =
   "id, brand, name, concentration, bottle_format, inspiration_kind, inspired_by, olfactory_families, image_path, is_favorite";
 
 const DETAIL_COLUMNS = `${SUMMARY_COLUMNS}, description, image_source_url, description_source_urls, created_at, updated_at`;
+const LEGACY_DETAIL_COLUMNS = `${LEGACY_SUMMARY_COLUMNS}, description, image_source_url, description_source_urls, created_at, updated_at`;
+
+type QueryError = {
+  code?: string;
+  message?: string;
+};
 
 function assertQuerySucceeded(error: unknown): asserts error is null {
   if (error) {
     throw new Error("Não foi possível carregar a coleção de perfumes.");
   }
+}
+
+function isMissingRemodelColumnError(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+
+  const { code, message } = error as QueryError;
+
+  return (
+    code === "42703" ||
+    (typeof message === "string" &&
+      [
+        "launch_year",
+        "category_type",
+        "audience",
+        "intensity",
+        "sweetness",
+        "freshness",
+        "elegance",
+        "sensuality",
+        "profile_tags",
+      ].some((column) => message.includes(column)))
+  );
+}
+
+function withRemodelDefaults(row: PerfumeSummaryRow): PerfumeSummaryRow {
+  return {
+    ...row,
+    launch_year: row.launch_year ?? null,
+    category_type: row.category_type ?? null,
+    audience: row.audience ?? null,
+    intensity: row.intensity ?? null,
+    sweetness: row.sweetness ?? null,
+    freshness: row.freshness ?? null,
+    elegance: row.elegance ?? null,
+    sensuality: row.sensuality ?? null,
+    profile_tags: row.profile_tags ?? [],
+  };
+}
+
+async function selectOwnPerfumeSummaries(
+  supabase: Awaited<ReturnType<typeof createServerSupabase>>,
+  userId: string,
+  options: { orderByCreatedAt?: boolean; limit?: number } = {},
+) {
+  function build(columns: string) {
+    let builder = supabase.from("perfumes").select(columns).eq("user_id", userId);
+
+    if (options.orderByCreatedAt) {
+      builder = builder.order("created_at", { ascending: false });
+    } else {
+      builder = builder
+        .order("is_favorite", { ascending: false })
+        .order("name", { ascending: true })
+        .order("brand", { ascending: true });
+    }
+
+    return typeof options.limit === "number" ? builder.limit(options.limit) : builder;
+  }
+
+  const result = await build(SUMMARY_COLUMNS);
+
+  if (!isMissingRemodelColumnError(result.error)) {
+    return result;
+  }
+
+  const legacyResult = await build(LEGACY_SUMMARY_COLUMNS);
+
+  return {
+    ...legacyResult,
+    data: legacyResult.data
+      ? ((legacyResult.data as unknown as PerfumeSummaryRow[]).map(
+          withRemodelDefaults,
+        ) as unknown)
+      : legacyResult.data,
+  };
 }
 
 function compareSummaries(left: PerfumeSummary, right: PerfumeSummary) {
@@ -90,6 +182,15 @@ function mapSummary(
     olfactoryFamilies: row.olfactory_families,
     imageUrl: row.image_path ? (signedUrls.get(row.image_path) ?? null) : null,
     isFavorite: row.is_favorite,
+    launchYear: row.launch_year,
+    categoryType: row.category_type,
+    audience: row.audience,
+    intensity: row.intensity,
+    sweetness: row.sweetness,
+    freshness: row.freshness,
+    elegance: row.elegance,
+    sensuality: row.sensuality,
+    profileTags: row.profile_tags ?? [],
   };
 }
 
@@ -121,13 +222,7 @@ async function signListImages(
 export async function listOwnPerfumes(): Promise<PerfumeSummary[]> {
   const user = await requireUser();
   const supabase = await createServerSupabase();
-  const { data, error } = await supabase
-    .from("perfumes")
-    .select(SUMMARY_COLUMNS)
-    .eq("user_id", user.id)
-    .order("is_favorite", { ascending: false })
-    .order("name", { ascending: true })
-    .order("brand", { ascending: true });
+  const { data, error } = await selectOwnPerfumeSummaries(supabase, user.id);
 
   assertQuerySucceeded(error);
 
@@ -140,18 +235,26 @@ export async function listOwnPerfumes(): Promise<PerfumeSummary[]> {
 export async function getOwnPerfume(id: string): Promise<PerfumeDetail | null> {
   const user = await requireUser();
   const supabase = await createServerSupabase();
-  const { data, error } = await supabase
+
+  async function selectDetail(columns: string) {
+    return supabase
     .from("perfumes")
-    .select(DETAIL_COLUMNS)
+      .select(columns)
     .eq("id", id)
     .eq("user_id", user.id)
     .maybeSingle();
+  }
+
+  const detailResult = await selectDetail(DETAIL_COLUMNS);
+  const { data, error } = isMissingRemodelColumnError(detailResult.error)
+    ? await selectDetail(LEGACY_DETAIL_COLUMNS)
+    : detailResult;
 
   if (error || !data) {
     return null;
   }
 
-  const row = data as PerfumeDetailRow;
+  const row = withRemodelDefaults(data as unknown as PerfumeDetailRow) as PerfumeDetailRow;
   const [notesResult, scoresResult, signedResult] = await Promise.all([
     supabase
       .from("perfume_notes")
@@ -231,12 +334,10 @@ export async function getOwnPerfumeDashboard(): Promise<{
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("is_favorite", true),
-    supabase
-      .from("perfumes")
-      .select(SUMMARY_COLUMNS)
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(3),
+    selectOwnPerfumeSummaries(supabase, user.id, {
+      orderByCreatedAt: true,
+      limit: 3,
+    }),
   ]);
 
   assertQuerySucceeded(totalResult.error);

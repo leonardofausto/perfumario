@@ -1,12 +1,13 @@
 "use client";
 
-import { Droplets, Heart } from "lucide-react";
+import { Droplets, Heart, Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import type { PerfumeSummary } from "@/features/perfumes/types";
 
 import styles from "./collection.module.css";
+import { DeletePerfumeButton } from "./delete-perfume-button";
 
 interface PerfumeCardProps {
   perfume: PerfumeSummary;
@@ -21,7 +22,7 @@ export function PerfumeCard({
 }: PerfumeCardProps) {
   return (
     <article className={styles.card}>
-      <div className={styles.cardFavorite}>
+      <div className={styles.cardActions}>
         <button
           type="button"
           aria-label={`${perfume.isFavorite ? "Remover" : "Adicionar"} ${perfume.name} ${
@@ -35,6 +36,21 @@ export function PerfumeCard({
         >
           <Heart size={18} fill={perfume.isFavorite ? "currentColor" : "none"} />
         </button>
+        <Link
+          href={`/colecao/${perfume.id}/editar`}
+          className={styles.iconBtn}
+          aria-label={`Editar ${perfume.name}`}
+        >
+          <Pencil size={17} aria-hidden="true" />
+        </Link>
+        <DeletePerfumeButton
+          id={perfume.id}
+          name={perfume.name}
+          className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+          label="Excluir"
+          ariaLabel={`Excluir ${perfume.name}`}
+          showLabel={false}
+        />
       </div>
 
       <Link

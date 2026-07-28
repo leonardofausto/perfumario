@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   refresh: vi.fn(),
+  deletePerfumeAction: vi.fn().mockResolvedValue({ status: "success" }),
   toggleFavoriteAction: vi.fn().mockResolvedValue({ status: "success" }),
 }));
 
@@ -11,6 +12,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: mocks.refresh }),
 }));
 vi.mock("@/features/perfumes/actions", () => ({
+  deletePerfumeAction: mocks.deletePerfumeAction,
   toggleFavoriteAction: mocks.toggleFavoriteAction,
 }));
 
@@ -18,8 +20,21 @@ import type { PerfumeSummary } from "@/features/perfumes/types";
 
 import { CollectionView } from "./collection-view";
 
+const remodelContract = {
+  launchYear: null,
+  categoryType: null,
+  audience: null,
+  intensity: null,
+  sweetness: null,
+  freshness: null,
+  elegance: null,
+  sensuality: null,
+  profileTags: [],
+};
+
 const perfumes: PerfumeSummary[] = [
   {
+    ...remodelContract,
     id: "amber",
     brand: "Zeta",
     name: "Ambar",
@@ -32,6 +47,7 @@ const perfumes: PerfumeSummary[] = [
     isFavorite: false,
   },
   {
+    ...remodelContract,
     id: "brisa",
     brand: "Alfa",
     name: "Brisa",
@@ -47,6 +63,7 @@ const perfumes: PerfumeSummary[] = [
 
 function makePerfume(index: number): PerfumeSummary {
   return {
+    ...remodelContract,
     id: `perfume-${index}`,
     brand: index % 2 === 0 ? "Alfa" : "Beta",
     name: `Perfume ${index.toString().padStart(2, "0")}`,
@@ -73,7 +90,7 @@ describe("CollectionView", () => {
     ).toBeInTheDocument();
   });
 
-  it("links cards to details and keeps favorites first", () => {
+  it("links cards to details, keeps favorites first, and exposes direct card management", () => {
     render(<CollectionView perfumes={perfumes} />);
 
     const links = screen.getAllByRole("link", { name: /ver detalhes/i });
@@ -81,7 +98,12 @@ describe("CollectionView", () => {
       "/colecao/brisa",
       "/colecao/amber",
     ]);
-    expect(screen.queryByRole("button", { name: /editar perfume/i })).toBeNull();
+    expect(
+      screen
+        .getAllByRole("link", { name: /editar/i })
+        .map((link) => link.getAttribute("href")),
+    ).toEqual(["/colecao/brisa/editar", "/colecao/amber/editar"]);
+    expect(screen.getAllByRole("button", { name: /excluir/i })).toHaveLength(2);
   });
 
   it("favorites without navigating through the card link", async () => {
@@ -92,6 +114,18 @@ describe("CollectionView", () => {
 
     expect(mocks.toggleFavoriteAction).toHaveBeenCalledWith("amber", true);
     expect(mocks.refresh).toHaveBeenCalled();
+  });
+
+  it("deletes from the card action only after confirmation", async () => {
+    const user = userEvent.setup();
+    render(<CollectionView perfumes={perfumes} />);
+
+    await user.click(screen.getByRole("button", { name: "Excluir Ambar" }));
+    expect(screen.getByRole("dialog", { name: "Excluir Ambar?" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Confirmar exclusão" }));
+
+    expect(mocks.deletePerfumeAction).toHaveBeenCalledWith("amber");
   });
 
   it("filters the gallery by search, favorite status, and brand", async () => {

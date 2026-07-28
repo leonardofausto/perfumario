@@ -20,6 +20,15 @@ const validPerfume = {
     { category: "performance", metricKey: "fixacao", score: 85 },
     { category: "season", metricKey: "verao", score: null },
   ],
+  launchYear: 2024,
+  categoryType: "designer",
+  audience: "unissex",
+  intensity: 90,
+  sweetness: 35,
+  freshness: 0,
+  elegance: null,
+  sensuality: 70,
+  profileTags: ["  assinatura  ", "noite"],
 } as const;
 
 describe("perfume form validation", () => {
@@ -31,19 +40,37 @@ describe("perfume form validation", () => {
     expect(result.description).toBe("Amadeirado marcante para a noite.");
     expect(result.olfactoryFamilies).toEqual(["Amadeirado", "Especiado"]);
     expect(result.notes.top).toEqual(["Bergamota", "Pimenta rosa"]);
+    expect(result.freshness).toBe(0);
+    expect(result.elegance).toBeNull();
+    expect(result.profileTags).toEqual(["assinatura", "noite"]);
   });
 
-  it("requires the referenced perfume for dupes and inspirations", () => {
-    const result = perfumeFormSchema.safeParse({
+  it("keeps the remodel contract optional for legacy records", () => {
+    const result = perfumeFormSchema.parse({
+      ...validPerfume,
+      launchYear: null,
+      categoryType: null,
+      audience: null,
+      intensity: null,
+      sweetness: null,
+      freshness: null,
+      elegance: null,
+      sensuality: null,
+      profileTags: [],
+    });
+
+    expect(result.launchYear).toBeNull();
+    expect(result.profileTags).toEqual([]);
+  });
+
+  it("normalizes an unknown referenced perfume for dupes and inspirations", () => {
+    const result = perfumeFormSchema.parse({
       ...validPerfume,
       inspirationKind: "dupe",
       inspiredBy: "   ",
     });
 
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.error.flatten().fieldErrors.inspiredBy).toBeDefined();
-    }
+    expect(result.inspiredBy).toBe("Não informado");
   });
 
   it("rejects a reference when the perfume is original", () => {
@@ -70,8 +97,17 @@ describe("perfume form validation", () => {
     ).toBe(false);
   });
 
-  it("requires identity, description, family, and one note in every pyramid layer", () => {
-    const result = perfumeFormSchema.safeParse({
+  it("accepts the unknown concentration used by the form default", () => {
+    expect(
+      perfumeFormSchema.safeParse({
+        ...validPerfume,
+        concentration: "unknown",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("normalizes unknown editorial fields instead of blocking save", () => {
+    const result = perfumeFormSchema.parse({
       ...validPerfume,
       brand: " ",
       name: "",
@@ -80,7 +116,15 @@ describe("perfume form validation", () => {
       notes: { top: [], heart: [], base: [] },
     });
 
-    expect(result.success).toBe(false);
+    expect(result.brand).toBe("Não informado");
+    expect(result.name).toBe("Não informado");
+    expect(result.description).toBe("Não informado");
+    expect(result.olfactoryFamilies).toEqual(["Não informado"]);
+    expect(result.notes).toEqual({
+      top: ["Não informado"],
+      heart: ["Não informado"],
+      base: ["Não informado"],
+    });
   });
 
   it("accepts nullable integer scores from zero through one hundred", () => {
@@ -92,6 +136,7 @@ describe("perfume form validation", () => {
           { category: "performance", metricKey: "projecao", score: 0 },
           { category: "time", metricKey: "noite", score: 100 },
           { category: "occasion", metricKey: "formal", score: null },
+          { category: "environment", metricKey: "fechado", score: 80 },
         ],
       }).success,
     ).toBe(true);
@@ -101,6 +146,41 @@ describe("perfume form validation", () => {
         perfumeFormSchema.safeParse({
           ...validPerfume,
           scores: [{ category: "performance", metricKey: "fixacao", score }],
+        }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("accepts nullable remodel percentages from zero through one hundred", () => {
+    for (const field of [
+      "intensity",
+      "sweetness",
+      "freshness",
+      "elegance",
+      "sensuality",
+    ] as const) {
+      expect(
+        perfumeFormSchema.safeParse({
+          ...validPerfume,
+          [field]: 0,
+        }).success,
+      ).toBe(true);
+      expect(
+        perfumeFormSchema.safeParse({
+          ...validPerfume,
+          [field]: 100,
+        }).success,
+      ).toBe(true);
+      expect(
+        perfumeFormSchema.safeParse({
+          ...validPerfume,
+          [field]: null,
+        }).success,
+      ).toBe(true);
+      expect(
+        perfumeFormSchema.safeParse({
+          ...validPerfume,
+          [field]: 101,
         }).success,
       ).toBe(false);
     }
@@ -117,10 +197,11 @@ describe("perfume form validation", () => {
 });
 
 describe("perfume image validation", () => {
-  it("accepts JPEG, PNG, and WebP images up to 5 MB", () => {
+  it("accepts JPG, PNG, AVIF, and WebP images up to 5 MB", () => {
     for (const [name, type] of [
       ["cover.jpg", "image/jpeg"],
       ["cover.png", "image/png"],
+      ["cover.avif", "image/avif"],
       ["cover.webp", "image/webp"],
     ]) {
       const file = new File(["cover"], name, { type });

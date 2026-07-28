@@ -30,11 +30,11 @@ describe("PerfumeDetailPage", () => {
     ).rejects.toThrow("NOT_FOUND");
   });
 
-  it("renders the owned perfume", async () => {
+  it("renders an owned legacy perfume without remodel-only arrays", async () => {
     mocks.getOwnPerfume.mockResolvedValue({
       id: "owned",
       brand: "Marca",
-      name: "Perfume próprio",
+      name: "Perfume proprio",
       description: "Descrição",
       concentration: "eau_de_parfum",
       bottleFormat: "decant",
@@ -46,13 +46,23 @@ describe("PerfumeDetailPage", () => {
       imageSourceUrl: null,
       descriptionSourceUrls: [],
       isFavorite: false,
-      notes: { top: ["Limão"], heart: ["Rosa"], base: ["Almíscar"] },
+      launchYear: null,
+      categoryType: null,
+      audience: null,
+      intensity: null,
+      sweetness: null,
+      freshness: null,
+      elegance: null,
+      sensuality: null,
+      notes: { top: ["Limao"], heart: ["Rosa"], base: ["Almiscar"] },
       scores: [],
       createdAt: "2026-07-26T10:00:00.000Z",
       updatedAt: "2026-07-26T10:00:00.000Z",
     });
 
     render(await PerfumeDetailPage({ params: Promise.resolve({ id: "owned" }) }));
-    expect(screen.getByRole("heading", { level: 1, name: "Perfume próprio" })).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { level: 1, name: "Perfume proprio" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Resumo do perfil")).not.toBeInTheDocument();
   });
 });

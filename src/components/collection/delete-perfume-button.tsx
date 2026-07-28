@@ -7,16 +7,37 @@ import { deletePerfumeAction } from "@/features/perfumes/actions";
 
 import styles from "./detail.module.css";
 
-export function DeletePerfumeButton({ id, name }: { id: string; name: string }) {
+export function DeletePerfumeButton({
+  id,
+  name,
+  className,
+  label = "Excluir perfume",
+  ariaLabel,
+  showIcon = true,
+  showLabel = true,
+}: {
+  id: string;
+  name: string;
+  className?: string;
+  label?: string;
+  ariaLabel?: string;
+  showIcon?: boolean;
+  showLabel?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
 
   return (
     <>
-      <button type="button" className={styles.deleteButton} onClick={() => setOpen(true)}>
-        <Trash2 size={17} />
-        Excluir perfume
+      <button
+        type="button"
+        className={className ?? styles.deleteButton}
+        aria-label={ariaLabel}
+        onClick={() => setOpen(true)}
+      >
+        {showIcon ? <Trash2 size={17} aria-hidden="true" /> : null}
+        {showLabel ? label : null}
       </button>
 
       {open ? (

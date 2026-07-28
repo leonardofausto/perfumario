@@ -51,6 +51,15 @@ function validFormData() {
       { category: "performance", metricKey: "fixacao", score: 85 },
     ]),
   );
+  data.set("launchYear", "2024");
+  data.set("categoryType", "designer");
+  data.set("audience", "unissex");
+  data.set("intensity", "88");
+  data.set("sweetness", "");
+  data.set("freshness", "0");
+  data.set("elegance", "70");
+  data.set("sensuality", "65");
+  data.set("profileTags", JSON.stringify(["assinatura", "noite"]));
   return data;
 }
 
@@ -72,6 +81,10 @@ describe("perfume mutations", () => {
       expect.objectContaining({
         p_user_id: "user-1",
         p_brand: "Natura",
+        p_launch_year: 2024,
+        p_freshness: 0,
+        p_sweetness: null,
+        p_profile_tags: ["assinatura", "noite"],
         p_notes: expect.any(Array),
         p_scores: expect.any(Array),
       }),
@@ -80,16 +93,16 @@ describe("perfume mutations", () => {
     expect(mocks.redirect).toHaveBeenCalledWith("/colecao/perfume-1");
   });
 
-  it("returns field errors without calling Supabase for invalid data", async () => {
+  it("returns field errors without calling Supabase for invalid enum data", async () => {
     const rpc = vi.fn();
     mocks.createServerSupabase.mockResolvedValue({ rpc });
     const formData = validFormData();
-    formData.set("brand", " ");
+    formData.set("concentration", "extract_plus");
 
     const result = await createPerfumeAction({ status: "idle" }, formData);
 
     expect(result.status).toBe("error");
-    expect(result.fieldErrors?.brand).toBeDefined();
+    expect(result.fieldErrors?.concentration).toBeDefined();
     expect(rpc).not.toHaveBeenCalled();
   });
 
@@ -112,6 +125,38 @@ describe("perfume mutations", () => {
       }),
     );
     expect(mocks.redirect).toHaveBeenCalledWith("/colecao/perfume-1");
+  });
+
+  it("updates unknown editorial fields as Não informado instead of blocking save", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: true, error: null });
+    mocks.createServerSupabase.mockResolvedValue({ rpc });
+    const formData = validFormData();
+    formData.set("brand", "");
+    formData.set("name", " ");
+    formData.set("description", "");
+    formData.set("inspirationKind", "dupe");
+    formData.set("inspiredBy", "");
+    formData.set("olfactoryFamilies", JSON.stringify([]));
+    formData.set("notes", JSON.stringify({ top: [], heart: [], base: [] }));
+
+    const result = await updatePerfumeAction("perfume-1", { status: "idle" }, formData);
+
+    expect(result.status).toBe("success");
+    expect(rpc).toHaveBeenCalledWith(
+      "update_perfume",
+      expect.objectContaining({
+        p_brand: "Não informado",
+        p_name: "Não informado",
+        p_description: "Não informado",
+        p_inspired_by: "Não informado",
+        p_olfactory_families: ["Não informado"],
+        p_notes: [
+          { layer: "top", note: "Não informado", display_order: 0 },
+          { layer: "heart", note: "Não informado", display_order: 0 },
+          { layer: "base", note: "Não informado", display_order: 0 },
+        ],
+      }),
+    );
   });
 
   it("favorites only the authenticated user's perfume", async () => {

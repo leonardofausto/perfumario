@@ -254,7 +254,7 @@ values (
   'perfume-images',
   false,
   5242880,
-  array['image/jpeg', 'image/png', 'image/webp']
+  array['image/jpeg', 'image/png', 'image/avif', 'image/webp']
 )
 on conflict (id) do update
 set

@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   BOTTLE_FORMATS,
   CONCENTRATIONS,
+  ENVIRONMENT_METRICS,
   INSPIRATION_KINDS,
   MAX_PERFUME_IMAGE_BYTES,
   OCCASION_METRICS,
@@ -13,9 +14,20 @@ import {
 } from "./constants";
 import type { PerfumeFormInput } from "./types";
 
+const UNKNOWN_VALUE = "Não informado";
 const requiredText = (message: string) => z.string().trim().min(1, message);
-const noteList = z.array(requiredText("Informe a nota olfativa.")).min(1);
+const unknownText = z.string().trim().transform((value) => value || UNKNOWN_VALUE);
+const unknownTextList = z.array(z.string()).transform((values) => {
+  const normalized = values.map((value) => value.trim()).filter(Boolean);
+  return normalized.length > 0 ? normalized : [UNKNOWN_VALUE];
+});
 const score = z.number().int().min(0).max(100).nullable();
+const optionalText = z
+  .string()
+  .trim()
+  .transform((value) => value || null)
+  .nullable();
+const percent = z.number().int().min(0).max(100).nullable();
 
 const perfumeScoreSchema = z.discriminatedUnion("category", [
   z.object({
@@ -43,13 +55,18 @@ const perfumeScoreSchema = z.discriminatedUnion("category", [
     metricKey: z.enum(TIME_METRICS),
     score,
   }),
+  z.object({
+    category: z.literal("environment"),
+    metricKey: z.enum(ENVIRONMENT_METRICS),
+    score,
+  }),
 ]);
 
 export const perfumeFormSchema: z.ZodType<PerfumeFormInput> = z
   .object({
-    brand: requiredText("Informe a marca."),
-    name: requiredText("Informe o nome do perfume."),
-    description: requiredText("Descreva a fragrância."),
+    brand: unknownText,
+    name: unknownText,
+    description: unknownText,
     concentration: z.enum(CONCENTRATIONS),
     bottleFormat: z.enum(BOTTLE_FORMATS),
     inspirationKind: z.enum(INSPIRATION_KINDS),
@@ -58,15 +75,22 @@ export const perfumeFormSchema: z.ZodType<PerfumeFormInput> = z
       .trim()
       .transform((value) => value || null)
       .nullable(),
-    olfactoryFamilies: z
-      .array(requiredText("Informe a família olfativa."))
-      .min(1, "Informe pelo menos uma família olfativa."),
+    olfactoryFamilies: unknownTextList,
     notes: z.object({
-      top: noteList,
-      heart: noteList,
-      base: noteList,
+      top: unknownTextList,
+      heart: unknownTextList,
+      base: unknownTextList,
     }),
     scores: z.array(perfumeScoreSchema),
+    launchYear: z.number().int().min(1800).max(2200).nullable(),
+    categoryType: optionalText,
+    audience: optionalText,
+    intensity: percent,
+    sweetness: percent,
+    freshness: percent,
+    elegance: percent,
+    sensuality: percent,
+    profileTags: z.array(requiredText("Informe a tag de perfil.")),
   })
   .superRefine((perfume, context) => {
     if (perfume.inspirationKind === "original" && perfume.inspiredBy !== null) {
@@ -78,11 +102,7 @@ export const perfumeFormSchema: z.ZodType<PerfumeFormInput> = z
     }
 
     if (perfume.inspirationKind !== "original" && perfume.inspiredBy === null) {
-      context.addIssue({
-        code: "custom",
-        message: "Informe qual perfume serviu de referência.",
-        path: ["inspiredBy"],
-      });
+      perfume.inspiredBy = UNKNOWN_VALUE;
     }
   });
 
@@ -99,7 +119,7 @@ export const perfumeImageSchema = z
       PERFUME_IMAGE_MIME_TYPES.includes(
         file.type as (typeof PERFUME_IMAGE_MIME_TYPES)[number],
       ),
-    "Use uma imagem JPEG, PNG ou WebP.",
+    "Use uma imagem JPG, PNG, AVIF ou WebP.",
   );
 
 export type PerfumeFormFields = z.input<typeof perfumeFormSchema>;
