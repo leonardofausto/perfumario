@@ -1,4 +1,4 @@
-import { ArrowLeft, Droplets } from "lucide-react";
+import { ArrowLeft, Candy, Droplets, Flame, Gem, Heart, Wind } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,11 +41,11 @@ const audienceLabels: Record<string, string> = {
 };
 
 const profileMetrics = [
-  ["Intensidade", "intensity"],
-  ["Docura", "sweetness"],
-  ["Frescor", "freshness"],
-  ["Elegância", "elegance"],
-  ["Sensualidade", "sensuality"],
+  ["Intensidade", "intensity", Flame],
+  ["Docura", "sweetness", Candy],
+  ["Frescor", "freshness", Wind],
+  ["Elegância", "elegance", Gem],
+  ["Sensualidade", "sensuality", Heart],
 ] as const;
 
 export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
@@ -149,7 +149,7 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
           <div>
             <h3>Perfil sensorial</h3>
             <ul className={styles.performanceBars} aria-label="Perfil sensorial">
-              {profileMetrics.map(([label, key]) => {
+              {profileMetrics.map(([label, key, Icon]) => {
                 const value = perfume[key];
                 const formatted = value === null ? "Não informado" : `${value}%`;
 
@@ -160,9 +160,11 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
                       value === null ? styles.performanceItemEmpty : styles.performanceItem
                     }
                   >
+                    <Icon size={19} />
                     <div className={styles.performanceHeader}>
-                      <strong>{label}</strong>
-                      <span>{formatted}</span>
+                      <span>
+                        {label}: {formatted}
+                      </span>
                     </div>
                     <span className={styles.performanceTrack} aria-hidden="true">
                       {value === null ? null : (

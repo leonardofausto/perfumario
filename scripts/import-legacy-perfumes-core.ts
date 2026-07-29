@@ -19,9 +19,23 @@ export type ImportManifestItem = {
   imageLocalPath: string | null;
   imageSourceUrl: string | null;
   descriptionSourceUrls: string[];
+  launchYear?: number | null;
+  categoryType?: string | null;
+  audience?: string | null;
+  intensity?: number | null;
+  sweetness?: number | null;
+  freshness?: number | null;
+  elegance?: number | null;
+  sensuality?: number | null;
   notes: Record<"top" | "heart" | "base", string[]>;
   scores: Array<{
-    category: "accord" | "performance" | "season" | "occasion" | "time";
+    category:
+      | "accord"
+      | "performance"
+      | "season"
+      | "occasion"
+      | "time"
+      | "environment";
     metricKey: string;
     score: number | null;
   }>;
@@ -196,6 +210,14 @@ export async function runImport({
         image_source_url: item.imageSourceUrl,
         description_source_urls: descriptionSources,
         is_favorite: item.isFavorite,
+        launch_year: item.launchYear ?? null,
+        category_type: item.categoryType ?? null,
+        audience: item.audience ?? null,
+        intensity: item.intensity ?? null,
+        sweetness: item.sweetness ?? null,
+        freshness: item.freshness ?? null,
+        elegance: item.elegance ?? null,
+        sensuality: item.sensuality ?? null,
       };
       const perfumeResult =
         operation === "create"

@@ -1,14 +1,16 @@
+import { Gauge, Radio, Shuffle, Sparkles, Waves } from "lucide-react";
+
 import { PERFORMANCE_METRICS } from "@/features/perfumes/constants";
 import type { PerfumeScore } from "@/features/perfumes/types";
 
 import styles from "./detail.module.css";
 
-const labels: Record<(typeof PERFORMANCE_METRICS)[number], string> = {
-  fixacao: "Fixação",
-  projecao: "Projeção",
-  rastro: "Rastro",
-  versatilidade: "Versatilidade",
-  presenca: "Presença",
+const metrics = {
+  fixacao: { label: "Fixação", Icon: Gauge },
+  projecao: { label: "Projeção", Icon: Radio },
+  rastro: { label: "Rastro", Icon: Waves },
+  versatilidade: { label: "Versatilidade", Icon: Shuffle },
+  presenca: { label: "Presença", Icon: Sparkles },
 };
 
 export function PerformanceRadar({ scores }: { scores: PerfumeScore[] }) {
@@ -24,15 +26,18 @@ export function PerformanceRadar({ scores }: { scores: PerfumeScore[] }) {
       {PERFORMANCE_METRICS.map((metric, index) => {
         const value = values[index];
         const formatted = value === null ? "Não informado" : `${value}%`;
+        const { Icon, label } = metrics[metric];
 
         return (
           <li
             key={metric}
             className={value === null ? styles.performanceItemEmpty : styles.performanceItem}
           >
+            <Icon size={19} />
             <div className={styles.performanceHeader}>
-              <strong>{labels[metric]}</strong>
-              <span>{formatted}</span>
+              <span>
+                {label}: {formatted}
+              </span>
             </div>
             <span className={styles.performanceTrack} aria-hidden="true">
               {value === null ? null : (

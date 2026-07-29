@@ -128,20 +128,19 @@ describe("CollectionView", () => {
     expect(mocks.deletePerfumeAction).toHaveBeenCalledWith("amber");
   });
 
-  it("filters the gallery by search, favorite status, and brand", async () => {
+  it("filters the gallery by status and brand", async () => {
     const user = userEvent.setup();
     render(<CollectionView perfumes={perfumes} />);
 
     expect(screen.getByText("2 perfumes")).toBeInTheDocument();
-    await user.type(screen.getByRole("searchbox", { name: "Buscar na coleção" }), "brisa");
-    expect(screen.getByRole("link", { name: /ver detalhes de brisa/i })).toBeInTheDocument();
+    expect(screen.queryByRole("searchbox")).toBeNull();
+    expect(screen.getByText("Status")).toBeInTheDocument();
+    expect(screen.getByText("Marcas")).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("Filtrar por status"), "favorites");
     expect(screen.queryByRole("link", { name: /ver detalhes de ambar/i })).toBeNull();
 
-    await user.clear(screen.getByRole("searchbox", { name: "Buscar na coleção" }));
-    await user.selectOptions(screen.getByLabelText("Exibir perfumes"), "favorites");
-    expect(screen.queryByRole("link", { name: /ver detalhes de ambar/i })).toBeNull();
-
-    await user.selectOptions(screen.getByLabelText("Exibir perfumes"), "all");
+    await user.selectOptions(screen.getByLabelText("Filtrar por status"), "all");
     await user.selectOptions(screen.getByLabelText("Filtrar por marca"), "Zeta");
     expect(screen.getByRole("link", { name: /ver detalhes de ambar/i })).toBeInTheDocument();
     expect(screen.queryByText("Eau de toilette")).toBeNull();

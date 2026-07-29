@@ -29,7 +29,6 @@ function comparePerfumes(left: PerfumeSummary, right: PerfumeSummary) {
 export function CollectionView({ perfumes }: CollectionViewProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "favorites">("all");
   const [selectedBrand, setSelectedBrand] = useState("all");
   const [pageSize, setPageSize] = useState<(typeof pageSizeOptions)[number]>(25);
@@ -44,19 +43,15 @@ export function CollectionView({ perfumes }: CollectionViewProps) {
   );
 
   const filteredPerfumes = useMemo(() => {
-    const normalizedSearch = search.trim().toLocaleLowerCase("pt-BR");
-
     return perfumes
       .filter((perfume) => {
-        const identity = `${perfume.brand} ${perfume.name}`.toLocaleLowerCase("pt-BR");
-        const matchesSearch = identity.includes(normalizedSearch);
         const matchesFavorite = filter === "all" || perfume.isFavorite;
         const matchesBrand = selectedBrand === "all" || perfume.brand === selectedBrand;
 
-        return matchesSearch && matchesFavorite && matchesBrand;
+        return matchesFavorite && matchesBrand;
       })
       .sort(comparePerfumes);
-  }, [filter, perfumes, search, selectedBrand]);
+  }, [filter, perfumes, selectedBrand]);
 
   const totalPages = Math.max(1, Math.ceil(filteredPerfumes.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -101,54 +96,42 @@ export function CollectionView({ perfumes }: CollectionViewProps) {
             </div>
 
             <div className={styles.filterControls}>
-              <div className={styles.searchField}>
-                <label className={styles.srOnly} htmlFor="collection-search">
-                  Buscar na coleção
-                </label>
-                <input
-                  id="collection-search"
-                  type="search"
-                  name="collection-search"
-                  placeholder="Buscar por perfume ou marca…"
-                  className={styles.searchInput}
-                  value={search}
-                  onChange={(event) => {
-                    setSearch(event.target.value);
-                    setPage(1);
-                  }}
-                />
-              </div>
-
-              <select
-                aria-label="Exibir perfumes"
-                className={styles.filterSelect}
-                value={filter}
-                onChange={(event) => {
-                  setFilter(event.target.value as "all" | "favorites");
-                  setPage(1);
-                }}
-              >
-                <option value="all">Todos</option>
-                <option value="favorites">Somente favoritos</option>
-              </select>
-
-              {brands.length > 0 ? (
+              <label className={styles.filterField}>
+                <span>Status</span>
                 <select
-                  aria-label="Filtrar por marca"
+                  aria-label="Filtrar por status"
                   className={styles.filterSelect}
-                  value={selectedBrand}
+                  value={filter}
                   onChange={(event) => {
-                    setSelectedBrand(event.target.value);
+                    setFilter(event.target.value as "all" | "favorites");
                     setPage(1);
                   }}
                 >
-                  <option value="all">Todas as marcas</option>
-                  {brands.map((brand) => (
-                    <option key={brand} value={brand}>
-                      {brand}
-                    </option>
-                  ))}
+                  <option value="all">Selecione</option>
+                  <option value="favorites">Somente favoritos</option>
                 </select>
+              </label>
+
+              {brands.length > 0 ? (
+                <label className={styles.filterField}>
+                  <span>Marcas</span>
+                  <select
+                    aria-label="Filtrar por marca"
+                    className={styles.filterSelect}
+                    value={selectedBrand}
+                    onChange={(event) => {
+                      setSelectedBrand(event.target.value);
+                      setPage(1);
+                    }}
+                  >
+                    <option value="all">Selecione</option>
+                    {brands.map((brand) => (
+                      <option key={brand} value={brand}>
+                        {brand}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               ) : null}
             </div>
           </div>
@@ -218,7 +201,7 @@ export function CollectionView({ perfumes }: CollectionViewProps) {
           ) : (
             <div className={styles.emptyState}>
               <strong>Nenhum perfume corresponde aos filtros.</strong>
-              <p>Limpe a busca ou escolha outra marca para rever sua estante.</p>
+              <p>Ajuste os filtros para rever sua estante.</p>
             </div>
           )}
         </>

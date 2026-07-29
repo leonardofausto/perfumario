@@ -152,7 +152,7 @@
 .technicalList dd {
   margin: 0;
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 400;
   overflow-wrap: anywhere;
 }
 
@@ -357,7 +357,7 @@
   border-radius: 0 7px 7px 0;
   color: #ffffff;
   font-size: 0.84rem;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 1;
   padding: 0 10px 0 12px;
   text-shadow: 0 1px 2px rgba(22, 18, 14, 0.35);
@@ -366,7 +366,7 @@
 
 .accordBar strong {
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .performanceSection {
@@ -397,7 +397,9 @@
 .performanceItem,
 .performanceItemEmpty {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 5px 8px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fff;
@@ -410,19 +412,16 @@
 
 .performanceHeader {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 6px;
   color: var(--muted);
   font-size: 0.84rem;
 }
 
-.performanceHeader strong {
-  color: var(--ink);
-}
-
+.performanceItem svg,
+.performanceItemEmpty svg,
 .performanceHeader span {
   color: var(--green);
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .performanceItemEmpty .performanceHeader span {
@@ -430,18 +429,19 @@
 }
 
 .performanceTrack {
+  grid-column: 1 / -1;
   display: block;
-  height: 10px;
+  height: 4px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e6e0d7;
+  background: #ece7df;
 }
 
 .performanceFill {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #1e513b, #8a6a38);
+  background: var(--green);
 }
 
 .suitabilityGroups {

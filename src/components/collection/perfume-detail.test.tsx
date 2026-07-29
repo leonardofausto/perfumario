@@ -127,12 +127,11 @@ describe("PerfumeDetail", () => {
     expect(screen.getByRole("heading", { name: "Perfil sensorial" })).toBeInTheDocument();
     expect(screen.getByLabelText("Métricas de desempenho")).toBeInTheDocument();
     expect(screen.getByLabelText("Perfil sensorial")).toBeInTheDocument();
-    expect(screen.getByText("Fixação")).toBeInTheDocument();
-    expect(screen.getByText("85%")).toBeInTheDocument();
-    expect(screen.getByText("Presença")).toBeInTheDocument();
-    expect(screen.getAllByText("0%").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText("Rastro")).toBeInTheDocument();
-    expect(screen.getAllByText("Não informado").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Fixação: 85%")).toBeInTheDocument();
+    expect(screen.getByText("Presença: 0%")).toBeInTheDocument();
+    expect(screen.getByText("Intensidade: 0%")).toBeInTheDocument();
+    expect(screen.getByText("Rastro: Não informado")).toBeInTheDocument();
+    expect(screen.getByText("Docura: Não informado")).toBeInTheDocument();
   });
 
   it("keeps season, occasion, and time metrics separate from performance", () => {

@@ -3,30 +3,40 @@
     "legacyKey": "armaf-odyssey-mandarin-sky",
     "brand": "ARMAF",
     "name": "Armaf Odyssey Mandarin Sky",
-    "description": "Armaf Odyssey Mandarin Sky combina uma abertura cítrica e aromática de mandarina, laranja, sálvia e açafrão com um coração gourmand de caramelo, tonka e tagetes. A base de vetiver, cedro e ambroxan dá um acabamento amadeirado âmbar moderno, mantendo a fragrância doce, luminosa e casual.",
+    "description": "Armaf Odyssey Mandarin Sky é um Eau de Parfum masculino lançado em 2023, com abertura cítrica de mandarina e laranja envolta por açafrão e sálvia. O coração combina caramelo, fava tonka e tagetes, enquanto ambroxan, cedro e vetiver sustentam uma assinatura doce, amadeirada e âmbar.",
     "concentration": "eau_de_parfum",
     "bottleFormat": "full_bottle",
-    "inspirationKind": "original",
-    "inspiredBy": null,
+    "inspirationKind": "inspiration",
+    "inspiredBy": "Jean Paul Gaultier Scandal Pour Homme",
     "olfactoryFamilies": [
       "Cítrico",
-      "Gourmand",
-      "Amadeirado âmbar"
+      "Doce",
+      "Amadeirado",
+      "Âmbar"
     ],
     "isFavorite": true,
     "imageLocalPath": "public/images/perfumes/armaf-odyssey-mandarin-sky.png",
-    "imageSourceUrl": "https://armaf.com/products/odyssey-mega-for-men",
+    "imageSourceUrl": "https://niceonesa.com/en/armaf-odyssey-mandarin-sky-limited-edition-for-men-eau-de-parfum-n36363",
     "descriptionSourceUrls": [
-      "https://armaf.com/products/odyssey-mega-for-men",
-      "https://www.fragrantica.com/perfume/Armaf/Odyssey-Mandarin-Sky-83132.html",
-      "https://hiddensamples.com/products/odyssey-mandarin-sky"
+      "https://niceonesa.com/en/armaf-odyssey-mandarin-sky-limited-edition-for-men-eau-de-parfum-n36363",
+      "https://www.fragindex.com/fragrance/armaf-odyssey-mandarin-sky",
+      "https://uae.sharafdg.com/product/armaf-odyssey-mandarin-sky-limited-edition-perfume-for-men-60ml-eau-de-parfum/",
+      "https://www.amazon.ae/Odyssey-Mandarin-Limited-Exclusive-Deodorant/dp/B0DKP7HSNQ"
     ],
+    "launchYear": 2023,
+    "categoryType": "arabe",
+    "audience": "masculine",
+    "intensity": null,
+    "sweetness": 86,
+    "freshness": 72,
+    "elegance": 68,
+    "sensuality": null,
     "notes": {
       "top": [
-        "Sálvia",
         "Mandarina",
         "Laranja",
-        "Açafrão"
+        "Açafrão",
+        "Sálvia"
       ],
       "heart": [
         "Caramelo",
@@ -43,82 +53,77 @@
       {
         "category": "accord",
         "metricKey": "citrico",
-        "score": 96
-      },
-      {
-        "category": "accord",
-        "metricKey": "caramelo",
-        "score": 88
+        "score": 95
       },
       {
         "category": "accord",
         "metricKey": "doce",
-        "score": 84
-      },
-      {
-        "category": "accord",
-        "metricKey": "ambar",
-        "score": 76
-      },
-      {
-        "category": "accord",
-        "metricKey": "aromatico",
-        "score": 70
-      },
-      {
-        "category": "accord",
-        "metricKey": "baunilha",
-        "score": 66
+        "score": 86
       },
       {
         "category": "accord",
         "metricKey": "amadeirado",
-        "score": 62
+        "score": 78
+      },
+      {
+        "category": "accord",
+        "metricKey": "ambar",
+        "score": 72
+      },
+      {
+        "category": "performance",
+        "metricKey": "projecao",
+        "score": 60
       },
       {
         "category": "season",
         "metricKey": "primavera",
-        "score": 78
+        "score": 33
       },
       {
         "category": "season",
         "metricKey": "verao",
-        "score": 68
+        "score": 0
       },
       {
         "category": "season",
         "metricKey": "outono",
-        "score": 82
+        "score": 33
       },
       {
         "category": "season",
         "metricKey": "inverno",
-        "score": 76
+        "score": 33
       },
       {
         "category": "occasion",
         "metricKey": "casual",
-        "score": 88
+        "score": null
       },
       {
         "category": "occasion",
         "metricKey": "encontro",
-        "score": 86
-      },
-      {
-        "category": "occasion",
-        "metricKey": "festa",
-        "score": 72
+        "score": null
       },
       {
         "category": "time",
-        "metricKey": "tarde",
-        "score": 76
+        "metricKey": "manha",
+        "score": 50
       },
       {
         "category": "time",
         "metricKey": "noite",
-        "score": 84
+        "score": 50
+      },
+      {
+        "category": "environment",
+        "metricKey": "ar_livre",
+        "score": null
+      },
+      {
+        "category": "environment",
+        "metricKey": "fechado",
+        "score": null
       }
     ]
   },
