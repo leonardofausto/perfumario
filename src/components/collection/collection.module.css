@@ -150,7 +150,7 @@
 .cardActions {
   position: absolute;
   top: 14px;
-  right: 14px;
+  right: 52px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -206,6 +206,13 @@
   border-color: #b88779;
   background: #fbf5f2;
   color: #8d3528;
+}
+
+.deleteIconBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
 }
 
 .imageContainer {

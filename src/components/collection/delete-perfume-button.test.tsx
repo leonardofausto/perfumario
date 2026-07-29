@@ -18,7 +18,13 @@ describe("DeletePerfumeButton", () => {
     render(<DeletePerfumeButton id="perfume-1" name="Essencial" />);
 
     await user.click(screen.getByRole("button", { name: "Excluir perfume" }));
-    expect(screen.getByRole("dialog", { name: "Excluir Essencial?" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: "Excluir fragrância?" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Essencial")).toBeInTheDocument();
+    expect(
+      screen.getByText("Esta ação é permanente e não poderá ser desfeita."),
+    ).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(screen.queryByRole("dialog")).toBeNull();

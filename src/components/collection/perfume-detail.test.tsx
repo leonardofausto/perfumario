@@ -57,13 +57,14 @@ const perfume: PerfumeDetailData = {
 };
 
 describe("PerfumeDetail", () => {
-  it("renders identity, explanation, and families without administrative actions", () => {
+  it("renders identity and explanation without administrative actions or olfactory family chips", () => {
     render(<PerfumeDetail perfume={perfume} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Essencial" })).toBeInTheDocument();
     expect(screen.getByText(perfume.description)).toBeInTheDocument();
-    expect(screen.getByText("Amadeirado")).toBeInTheDocument();
-    expect(screen.getByText("Especiado")).toBeInTheDocument();
+    expect(screen.queryByText("Amadeirado")).not.toBeInTheDocument();
+    expect(screen.queryByText("Especiado")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Famílias olfativas")).not.toBeInTheDocument();
     const essential = screen.getByLabelText("Informações essenciais");
     expect(within(essential).getByText("Eau de Parfum (EDP)")).toBeInTheDocument();
     expect(within(essential).getByText("Designer")).toBeInTheDocument();
@@ -74,20 +75,19 @@ describe("PerfumeDetail", () => {
     expect(screen.queryByRole("button", { name: /excluir/i })).not.toBeInTheDocument();
   });
 
-  it("moves secondary identity data to the technical section without retired profile tags", () => {
+  it("keeps all identity metadata in the hero without a technical section", () => {
     render(<PerfumeDetail perfume={perfume} />);
 
-    const technical = screen
-      .getByRole("heading", { name: "Informações técnicas" })
-      .closest("section");
+    const essential = screen.getByLabelText("Informações essenciais");
 
-    expect(technical).not.toBeNull();
+    expect(screen.queryByRole("heading", { name: "Informações técnicas" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Resumo do perfil")).not.toBeInTheDocument();
-    expect(within(technical as HTMLElement).getByText("2024")).toBeInTheDocument();
-    expect(within(technical as HTMLElement).getByText("Unissex")).toBeInTheDocument();
-    expect(within(technical as HTMLElement).getByText("Frasco")).toBeInTheDocument();
-    expect(within(technical as HTMLElement).queryByText("Tags de perfil")).not.toBeInTheDocument();
-    expect(within(technical as HTMLElement).queryByText("Assinatura")).not.toBeInTheDocument();
+    expect(within(essential).getByText("2024")).toBeInTheDocument();
+    expect(within(essential).getByText("Unissex")).toBeInTheDocument();
+    expect(within(essential).queryByText("Formato na estante")).not.toBeInTheDocument();
+    expect(within(essential).queryByText("Frasco")).not.toBeInTheDocument();
+    expect(screen.queryByText("Tags de perfil")).not.toBeInTheDocument();
+    expect(screen.queryByText("Assinatura")).not.toBeInTheDocument();
   });
 
   it("renders the olfactory pyramid as three semantic compact note groups", () => {

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -121,7 +121,9 @@ describe("CollectionView", () => {
     render(<CollectionView perfumes={perfumes} />);
 
     await user.click(screen.getByRole("button", { name: "Excluir Ambar" }));
-    expect(screen.getByRole("dialog", { name: "Excluir Ambar?" })).toBeInTheDocument();
+    const dialog = screen.getByRole("dialog", { name: "Excluir fragrância?" });
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByText("Ambar")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Confirmar exclusão" }));
 

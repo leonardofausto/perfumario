@@ -1,12 +1,25 @@
-import { ArrowLeft, Candy, Droplets, Flame, Gem, Heart, Wind } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Candy,
+  Droplets,
+  Flame,
+  Gem,
+  Heart,
+  Link as LinkIcon,
+  Sparkles,
+  Tags,
+  Users,
+  Wind,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import type { PerfumeDetail as PerfumeDetailData } from "@/features/perfumes/types";
 
 import styles from "./detail.module.css";
+import { FitFragranceTitle } from "./fit-fragrance-title";
 import { MainAccords } from "./main-accords";
-import { OlfactoryFamilyChips } from "./olfactory-family-chips";
 import { OlfactoryPyramid } from "./olfactory-pyramid";
 import { PerformanceRadar } from "./performance-radar";
 import { SuitabilityGrid } from "./suitability-grid";
@@ -85,30 +98,65 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
 
         <div className={styles.heroCopy}>
           <span className={styles.brand}>{perfume.brand}</span>
-          <h1>{perfume.name}</h1>
-          <p className={styles.description}>{perfume.description}</p>
-          <OlfactoryFamilyChips families={perfume.olfactoryFamilies} />
+          <FitFragranceTitle className={styles.fragranceTitle}>
+            {perfume.name}
+          </FitFragranceTitle>
+          <p className={styles.description} lang="pt-BR">
+            {perfume.description}
+          </p>
           <dl className={styles.essentialMeta} aria-label="Informações essenciais">
-            <div>
-              <dt>Concentração</dt>
+            <div className={styles.metaItem}>
+              <dt>
+                <Droplets size={15} aria-hidden="true" />
+                Concentração
+              </dt>
               <dd>{concentrationLabels[perfume.concentration]}</dd>
             </div>
-            {perfume.categoryType ? (
-              <div>
-                <dt>Categoria</dt>
-                <dd>{categoryLabels[perfume.categoryType] ?? perfume.categoryType}</dd>
-              </div>
-            ) : null}
-            <div>
-              <dt>Relação</dt>
+            <div className={styles.metaItem}>
+              <dt>
+                <Tags size={15} aria-hidden="true" />
+                Categoria
+              </dt>
+              <dd>
+                {perfume.categoryType
+                  ? categoryLabels[perfume.categoryType] ?? perfume.categoryType
+                  : "Não informado"}
+              </dd>
+            </div>
+            <div className={styles.metaItem}>
+              <dt>
+                <LinkIcon size={15} aria-hidden="true" />
+                Relação
+              </dt>
               <dd>{relationLabel}</dd>
             </div>
-            <div>
-              <dt>Perfume de referência</dt>
+            <div className={styles.metaItem}>
+              <dt>
+                <Sparkles size={15} aria-hidden="true" />
+                Perfume de referência
+              </dt>
               <dd>
                 {perfume.inspirationKind === "original"
                   ? "Não se aplica"
                   : perfume.inspiredBy}
+              </dd>
+            </div>
+            <div className={styles.metaItemSecondary}>
+              <dt>
+                <Calendar size={15} aria-hidden="true" />
+                Ano de lançamento
+              </dt>
+              <dd>{perfume.launchYear ?? "Não informado"}</dd>
+            </div>
+            <div className={styles.metaItemSecondary}>
+              <dt>
+                <Users size={15} aria-hidden="true" />
+                Público
+              </dt>
+              <dd>
+                {perfume.audience
+                  ? audienceLabels[perfume.audience] ?? perfume.audience
+                : "Não informado"}
               </dd>
             </div>
           </dl>
@@ -120,7 +168,7 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
           <div className={styles.sectionHeading}>
             <span>Perfil olfativo</span>
             <h2>Principais acordes</h2>
-            <p>As facetas mais perceptíveis da fragrância, em ordem de presença.</p>
+            <p>Facetas mais presentes na fragrância.</p>
           </div>
           <MainAccords scores={perfume.scores} />
         </section>
@@ -130,7 +178,7 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
         <div className={styles.sectionHeading}>
           <span>Composição</span>
           <h2>Pirâmide olfativa</h2>
-          <p>Da primeira impressão à assinatura que permanece na pele.</p>
+          <p>Evolução da fragrância na pele.</p>
         </div>
         <OlfactoryPyramid notes={perfume.notes} />
       </section>
@@ -139,7 +187,7 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
         <div className={styles.sectionHeading}>
           <span>Comportamento</span>
           <h2>Perfil da fragrância</h2>
-          <p>Indicadores de desempenho e percepção sensorial.</p>
+          <p>Desempenho e percepção sensorial.</p>
         </div>
         <div className={styles.profileColumns}>
           <div>
@@ -186,36 +234,11 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
         <div className={styles.sectionHeading}>
           <span>Quando usar</span>
           <h2>Ocasiões ideais</h2>
-          <p>Clima, ocasiões, horários e ambientes onde a fragrância se destaca.</p>
+          <p>Melhores momentos para usar a fragrância.</p>
         </div>
         <SuitabilityGrid scores={perfume.scores} />
       </section>
 
-      <section className={`${styles.section} ${styles.technicalSection}`}>
-        <div className={styles.sectionHeading}>
-          <span>Registro</span>
-          <h2>Informações técnicas</h2>
-          <p>Dados complementares para consulta da fragrância.</p>
-        </div>
-        <dl className={styles.technicalList}>
-          <div>
-            <dt>Ano de lançamento</dt>
-            <dd>{perfume.launchYear ?? "Não informado"}</dd>
-          </div>
-          <div>
-            <dt>Público</dt>
-            <dd>
-              {perfume.audience
-                ? audienceLabels[perfume.audience] ?? perfume.audience
-                : "Não informado"}
-            </dd>
-          </div>
-          <div>
-            <dt>Formato na estante</dt>
-            <dd>{perfume.bottleFormat === "decant" ? "Decant" : "Frasco"}</dd>
-          </div>
-        </dl>
-      </section>
     </article>
   );
 }

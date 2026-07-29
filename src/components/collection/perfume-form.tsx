@@ -3,7 +3,7 @@
 import { ArrowLeft, LoaderCircle, Save } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useActionState, useId, useMemo, useState } from "react";
+import { useActionState, useEffect, useId, useMemo, useState } from "react";
 
 import {
   createPerfumeAction,
@@ -31,7 +31,6 @@ import type {
 import type { ActionState } from "@/lib/auth/types";
 
 import styles from "./form.module.css";
-import { PercentageBar, TagInput } from "./ui-primitives";
 
 type ScoreGroup = {
   category: Exclude<ScoreCategory, "accord">;
@@ -270,7 +269,6 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
     perfume?.inspirationKind ?? "original",
   );
   const [inspiredBy, setInspiredBy] = useState(perfume?.inspiredBy ?? "");
-  const [families, setFamilies] = useState(perfume?.olfactoryFamilies ?? []);
   const [sensoryValues, setSensoryValues] = useState<SensoryValues>({
     intensity: perfume?.intensity ?? null,
     sweetness: perfume?.sweetness ?? null,
@@ -286,6 +284,15 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   const initialScores = useMemo(() => defaultScores(perfume), [perfume]);
   const [scores, setScores] = useState<PerfumeScore[]>(initialScores);
   const [accords, setAccords] = useState(formatAccords(perfume?.scores ?? []));
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (coverPreviewUrl) {
+        URL.revokeObjectURL(coverPreviewUrl);
+      }
+    };
+  }, [coverPreviewUrl]);
 
   function setScore(category: ScoreCategory, metricKey: string, value: number | null) {
     setScores((current) =>
@@ -299,6 +306,16 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
 
   function setSensory(field: SensoryField, value: number | null) {
     setSensoryValues((current) => ({ ...current, [field]: value }));
+  }
+
+  function updateCoverPreview(file?: File) {
+    setCoverPreviewUrl((current) => {
+      if (current) {
+        URL.revokeObjectURL(current);
+      }
+
+      return file ? URL.createObjectURL(file) : null;
+    });
   }
 
   const backHref = perfume ? `/colecao/${perfume.id}` : "/colecao";
@@ -340,9 +357,18 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 name="image"
                 accept="image/jpeg,image/png,image/avif,image/webp"
                 aria-label="Imagem do perfume"
+                onChange={(event) => updateCoverPreview(event.target.files?.[0])}
               />
               <span className={styles.identityCoverPreview}>
-                {perfume?.imageUrl ? (
+                {coverPreviewUrl ? (
+                  <Image
+                    src={coverPreviewUrl}
+                    alt="Prévia da nova imagem selecionada"
+                    fill
+                    sizes="210px"
+                    unoptimized
+                  />
+                ) : perfume?.imageUrl ? (
                   <Image
                     src={perfume.imageUrl}
                     alt={`Imagem atual de ${perfume.name}`}
@@ -500,14 +526,6 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
             description="Composição e acordes olfativos."
           />
           <div className={styles.fragranceContent}>
-            <div className={`${styles.full} ${styles.familyField}`}>
-              <TagInput
-                label="Famílias olfativas"
-                name="olfactoryFamilies"
-                value={families}
-                onChange={setFamilies}
-              />
-            </div>
             <div className={styles.fragranceGroup}>
               <h3>Pirâmide olfativa</h3>
               <div className={styles.notePyramid} aria-label="Pirâmide olfativa">
@@ -543,23 +561,18 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                     onChange={(event) => setAccords(event.target.value)}
                     placeholder={"citrico: 95\ncaramelo: 84\ndoce:"}
                   />
-                  <small>Use um acorde por linha no formato nome: intensidade. Deixe a intensidade vazia quando não souber.</small>
+                  <small>
+                    Use um acorde por linha no formato <strong>nome: intensidade</strong>.
+                    Deixe a intensidade vazia quando não souber.
+                  </small>
                 </label>
-                <div className={styles.previewList} aria-label="Preview de acordes">
-                  {accordScores.length ? (
-                    accordScores.map((accord) => (
-                      <PercentageBar
-                        key={accord.metricKey}
-                        label={accord.metricKey}
-                        value={accord.score}
-                      />
-                    ))
-                  ) : (
-                    <p className={styles.emptyPreview}>Nenhum acorde informado.</p>
-                  )}
-                </div>
               </div>
             </div>
+            <input
+              type="hidden"
+              name="olfactoryFamilies"
+              value={JSON.stringify(perfume?.olfactoryFamilies ?? [])}
+            />
             <input
               type="hidden"
               name="notes"

@@ -170,6 +170,33 @@ describe("PerfumeForm", () => {
     expect(screen.getByText("máximo de 5 MB.")).toBeInTheDocument();
   });
 
+  it("shows a local cover preview as soon as a new image is selected", async () => {
+    const createObjectURL = vi.fn(() => "blob:cover-preview");
+    const revokeObjectURL = vi.fn();
+
+    Object.defineProperties(URL, {
+      createObjectURL: {
+        configurable: true,
+        value: createObjectURL,
+      },
+      revokeObjectURL: {
+        configurable: true,
+        value: revokeObjectURL,
+      },
+    });
+
+    const user = userEvent.setup();
+    render(<PerfumeForm />);
+
+    const file = new File(["cover"], "cover.webp", { type: "image/webp" });
+    await user.upload(screen.getByLabelText("Imagem do perfume"), file);
+
+    expect(createObjectURL).toHaveBeenCalledWith(file);
+    expect(
+      screen.getByAltText("Prévia da nova imagem selecionada"),
+    ).toHaveAttribute("src", "blob:cover-preview");
+  });
+
   it("keeps persisted remodel fields available for save", async () => {
     const user = userEvent.setup();
     render(<PerfumeForm perfume={perfume} />);
@@ -316,17 +343,17 @@ describe("PerfumeForm", () => {
     expect(screen.queryByRole("heading", { name: `Editar ${longPerfume.name}` })).not.toBeInTheDocument();
     expect(screen.getByLabelText("Marca")).toHaveValue(longPerfume.brand);
     expect(screen.getByLabelText("Nome do perfume")).toHaveValue(longPerfume.name);
-    expect(screen.getByText(longFamily)).toBeInTheDocument();
+    expect(screen.queryByText(longFamily)).not.toBeInTheDocument();
+    expect(document.querySelector('input[name="olfactoryFamilies"]')).toHaveValue(
+      JSON.stringify([longFamily]),
+    );
     expect(screen.queryByText(longTag)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Notas de coração")).toHaveValue("");
   });
 
-  it("edits olfactory families as tags and renders an accord preview", async () => {
-    const user = userEvent.setup();
-    render(<PerfumeForm />);
+  it("keeps accords editable without family tags or form preview bars", () => {
+    render(<PerfumeForm perfume={perfume} />);
 
-    await user.type(screen.getByLabelText("Famílias olfativas"), "Amadeirado{Enter}");
-    await user.type(screen.getByLabelText("Famílias olfativas"), "Amadeirado{Enter}");
     fireEvent.change(screen.getByLabelText("Acordes principais"), {
       target: {
         value:
@@ -334,16 +361,15 @@ describe("PerfumeForm", () => {
       },
     });
 
+    expect(screen.queryByLabelText("Famílias olfativas")).not.toBeInTheDocument();
     expect(document.querySelector('input[name="olfactoryFamilies"]')).toHaveValue(
       JSON.stringify(["Amadeirado"]),
     );
-    expect(screen.getByRole("list", { name: "Famílias olfativas selecionados" })).toBeInTheDocument();
-    expect(screen.getByRole("progressbar", { name: "citrico: 95%" })).toBeInTheDocument();
-    expect(screen.getByText("doce")).toBeInTheDocument();
-    expect(screen.getAllByText("Não informado").length).toBeGreaterThan(0);
-    expect(
-      screen.getByText("acorde extremamente longo com muitas palavras para testar quebra"),
-    ).toBeInTheDocument();
+    expect(screen.queryByRole("list", { name: "Famílias olfativas selecionados" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("progressbar", { name: "citrico: 95%" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Acordes principais")).toHaveValue(
+      "acorde extremamente longo com muitas palavras para testar quebra: 25\ncitrico: 95\ndoce:",
+    );
   });
 
   it("keeps composition hidden inputs in sync with note and accord edits", () => {

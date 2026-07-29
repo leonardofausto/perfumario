@@ -43,15 +43,15 @@ export function PerfumeCard({
         >
           <Pencil size={17} aria-hidden="true" />
         </Link>
-        <DeletePerfumeButton
-          id={perfume.id}
-          name={perfume.name}
-          className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-          label="Excluir"
-          ariaLabel={`Excluir ${perfume.name}`}
-          showLabel={false}
-        />
       </div>
+      <DeletePerfumeButton
+        id={perfume.id}
+        name={perfume.name}
+        className={`${styles.iconBtn} ${styles.iconBtnDanger} ${styles.deleteIconBtn}`}
+        label="Excluir"
+        ariaLabel={`Excluir ${perfume.name}`}
+        showLabel={false}
+      />
 
       <Link
         href={`/colecao/${perfume.id}`}

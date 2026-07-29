@@ -345,17 +345,15 @@
 .fragranceContent {
   display: grid;
   min-width: 0;
-  gap: 28px;
-}
-
-.familyField {
-  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 34px;
 }
 
 .fragranceGroup {
   display: grid;
   min-width: 0;
-  gap: 13px;
+  gap: 12px;
 }
 
 .fragranceGroup h3 {
@@ -369,15 +367,14 @@
 .notePyramid {
   display: grid;
   min-width: 0;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 12px;
 }
 
 .noteLayer {
   display: grid;
   min-width: 0;
   align-content: start;
-  gap: 9px;
+  gap: 7px;
   color: #4f4941;
   font-size: 0.78rem;
   font-weight: 700;
@@ -393,13 +390,20 @@
 .noteLayerHeading strong {
   color: #24211d;
   font-family: var(--font-display);
-  font-size: 0.98rem;
+  font-size: 1.02rem;
   font-weight: 500;
   line-height: 1.08;
 }
 
+.noteLayerHeading small {
+  color: #7a7268;
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.28;
+}
+
 .noteLayer textarea {
-  min-height: 128px;
+  min-height: 112px;
   border: 1px solid #d8cfc2;
   border-radius: 8px;
   background: #fff;
@@ -421,23 +425,32 @@
 .accordEditor {
   display: grid;
   min-width: 0;
-  grid-template-columns: minmax(0, 0.95fr) minmax(240px, 1fr);
   align-items: start;
-  gap: 22px;
 }
 
 .accordEditor label {
   display: flex;
   min-width: 0;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   color: #4f4941;
   font-size: 0.78rem;
   font-weight: 700;
 }
 
 .accordEditor textarea {
-  min-height: 172px;
+  min-height: 438px;
+}
+
+.accordEditor small {
+  max-width: 62ch;
+  color: #83796d;
+  line-height: 1.45;
+}
+
+.accordEditor small strong {
+  color: #4f4941;
+  font-weight: 800;
 }
 
 .scoreGroups fieldset {
@@ -604,23 +617,6 @@
   font-weight: 500;
 }
 
-.previewList {
-  display: grid;
-  gap: 9px;
-  min-width: 0;
-  padding-top: 2px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-.emptyPreview {
-  margin: 0;
-  color: #6c645a;
-  font-size: 0.76rem;
-  font-weight: 700;
-}
-
 .formMessage {
   margin: 0;
   padding: 12px 14px;
@@ -640,12 +636,10 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  padding: 14px;
-  border: 1px solid #ddd4c8;
-  border-radius: 13px;
-  background: rgba(255, 253, 249, 0.94);
-  box-shadow: 0 14px 35px rgba(49, 41, 31, 0.12);
-  backdrop-filter: blur(12px);
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 1px solid #ddd4c8;
+  background: transparent;
 }
 
 .footer a,
@@ -759,6 +753,7 @@
   .footer {
     align-items: stretch;
     flex-direction: column-reverse;
+    padding-top: 12px;
   }
 
   .footer a,
