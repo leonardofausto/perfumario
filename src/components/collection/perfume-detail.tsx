@@ -61,7 +61,15 @@ const profileMetrics = [
   ["Sensualidade", "sensuality", Heart],
 ] as const;
 
-export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
+export function PerfumeDetail({
+  perfume,
+  backHref = "/colecao",
+  backLabel = "Voltar para a cole\u00e7\u00e3o",
+}: {
+  perfume: PerfumeDetailData;
+  backHref?: string;
+  backLabel?: string;
+}) {
   const relationLabel =
     perfume.inspirationKind === "original"
       ? "Original"
@@ -72,9 +80,9 @@ export function PerfumeDetail({ perfume }: { perfume: PerfumeDetailData }) {
   return (
     <article className={styles.page}>
       <nav className={styles.backRow} aria-label="Navegação da coleção">
-        <Link href="/colecao">
+        <Link href={backHref}>
           <ArrowLeft size={17} />
-          Voltar para a coleção
+          {backLabel}
         </Link>
       </nav>
 

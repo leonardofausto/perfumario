@@ -4,6 +4,10 @@ import { requireUser } from "@/lib/auth/session";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 import type {
+  RecommenderPerfume,
+} from "@/features/recommender/types";
+
+import type {
   BottleFormat,
   Concentration,
   InspirationKind,
@@ -230,6 +234,50 @@ export async function listOwnPerfumes(): Promise<PerfumeSummary[]> {
   const signedUrls = await signListImages(supabase, rows);
 
   return rows.map((row) => mapSummary(row, signedUrls)).sort(compareSummaries);
+}
+
+export async function listOwnRecommenderPerfumes(): Promise<RecommenderPerfume[]> {
+  const user = await requireUser();
+  const supabase = await createServerSupabase();
+  const { data, error } = await selectOwnPerfumeSummaries(supabase, user.id);
+
+  assertQuerySucceeded(error);
+
+  const rows = (data ?? []) as PerfumeSummaryRow[];
+  const signedUrls = await signListImages(supabase, rows);
+  const summaries = rows.map((row) => mapSummary(row, signedUrls)).sort(compareSummaries);
+
+  if (summaries.length === 0) {
+    return [];
+  }
+
+  const perfumeIds = summaries.map((perfume) => perfume.id);
+  const scoresResult = await supabase
+    .from("perfume_scores")
+    .select("perfume_id, category, metric_key, score")
+    .eq("user_id", user.id)
+    .in("perfume_id", perfumeIds)
+    .order("category", { ascending: true })
+    .order("metric_key", { ascending: true });
+
+  assertQuerySucceeded(scoresResult.error);
+
+  const scoresByPerfume = new Map<string, PerfumeScore[]>();
+
+  for (const score of (scoresResult.data ?? []) as (ScoreRow & { perfume_id: string })[]) {
+    const current = scoresByPerfume.get(score.perfume_id) ?? [];
+    current.push({
+      category: score.category,
+      metricKey: score.metric_key,
+      score: score.score,
+    });
+    scoresByPerfume.set(score.perfume_id, current);
+  }
+
+  return summaries.map((perfume) => ({
+    ...perfume,
+    scores: scoresByPerfume.get(perfume.id) ?? [],
+  }));
 }
 
 export async function getOwnPerfume(id: string): Promise<PerfumeDetail | null> {

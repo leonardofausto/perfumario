@@ -65,4 +65,48 @@ describe("PerfumeDetailPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Perfume proprio" })).toBeInTheDocument();
     expect(screen.queryByLabelText("Resumo do perfil")).not.toBeInTheDocument();
   });
+
+  it("uses the recommender return action when opened from ranking", async () => {
+    mocks.getOwnPerfume.mockResolvedValue({
+      id: "owned",
+      brand: "Marca",
+      name: "Perfume proprio",
+      description: "DescriÃ§Ã£o",
+      concentration: "eau_de_parfum",
+      bottleFormat: "decant",
+      inspirationKind: "original",
+      inspiredBy: null,
+      olfactoryFamilies: ["Floral"],
+      imageUrl: null,
+      imagePath: null,
+      imageSourceUrl: null,
+      descriptionSourceUrls: [],
+      isFavorite: false,
+      launchYear: null,
+      categoryType: null,
+      audience: null,
+      intensity: null,
+      sweetness: null,
+      freshness: null,
+      elegance: null,
+      sensuality: null,
+      profileTags: [],
+      notes: { top: ["Limao"], heart: ["Rosa"], base: ["Almiscar"] },
+      scores: [],
+      createdAt: "2026-07-26T10:00:00.000Z",
+      updatedAt: "2026-07-26T10:00:00.000Z",
+    });
+
+    render(
+      await PerfumeDetailPage({
+        params: Promise.resolve({ id: "owned" }),
+        searchParams: Promise.resolve({ from: "recomendador" }),
+      })
+    );
+
+    expect(screen.getByRole("link", { name: "Voltar ao Recomendador" })).toHaveAttribute(
+      "href",
+      "/recomendador"
+    );
+  });
 });

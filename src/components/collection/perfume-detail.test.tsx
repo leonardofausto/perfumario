@@ -60,6 +60,10 @@ describe("PerfumeDetail", () => {
   it("renders identity and explanation without administrative actions or olfactory family chips", () => {
     render(<PerfumeDetail perfume={perfume} />);
 
+    expect(screen.getByRole("link", { name: /Voltar para a cole/ })).toHaveAttribute(
+      "href",
+      "/colecao"
+    );
     expect(screen.getByRole("heading", { level: 1, name: "Essencial" })).toBeInTheDocument();
     expect(screen.getByText(perfume.description)).toBeInTheDocument();
     expect(screen.queryByText("Amadeirado")).not.toBeInTheDocument();
@@ -73,6 +77,21 @@ describe("PerfumeDetail", () => {
     expect(screen.queryByRole("link", { name: "Editar perfume" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /favor/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /excluir/i })).not.toBeInTheDocument();
+  });
+
+  it("can point the back action to the recommender flow", () => {
+    render(
+      <PerfumeDetail
+        perfume={perfume}
+        backHref="/recomendador"
+        backLabel="Voltar ao Recomendador"
+      />
+    );
+
+    expect(screen.getByRole("link", { name: "Voltar ao Recomendador" })).toHaveAttribute(
+      "href",
+      "/recomendador"
+    );
   });
 
   it("keeps all identity metadata in the hero without a technical section", () => {
