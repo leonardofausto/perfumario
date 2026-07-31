@@ -69,6 +69,7 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
+  min-width: 0;
   padding: clamp(34px, 5vw, 68px);
 }
 
@@ -82,6 +83,9 @@
 }
 
 .fragranceTitle {
+  --fit-title-max-size: 72px;
+  --fit-title-min-size: 38px;
+  width: 100%;
   max-width: 690px;
   margin: 9px 0 14px;
   font-family: var(--font-display);
@@ -575,7 +579,11 @@
   }
 
   .fragranceTitle {
-    white-space: normal;
+    --fit-title-max-size: 52px;
+    --fit-title-min-size: 18px;
+    max-width: 100%;
+    font-size: var(--fit-title-size, 52px);
+    white-space: nowrap;
   }
 }
 
@@ -599,6 +607,30 @@
 
   .heart {
     width: 87%;
+  }
+}
+
+@media (max-width: 800px) and (orientation: landscape) {
+  .fragranceTitle {
+    --fit-title-max-size: 46px;
+    --fit-title-min-size: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .fragranceTitle {
+    --fit-title-max-size: 46px;
+    --fit-title-min-size: 16px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .fragranceTitle {
+    --fit-title-max-size: 46px;
+    --fit-title-min-size: 18px;
+    max-width: 100%;
+    font-size: var(--fit-title-size, 46px);
+    white-space: nowrap;
   }
 }
 

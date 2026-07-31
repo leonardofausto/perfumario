@@ -37,10 +37,12 @@ test("logs in, verifies the private shell, updates profile, restores it, and log
 
   await page.goto("/login");
   await page.getByLabel("E-mail").fill(email!);
-  await page.getByLabel("Senha").fill(password!);
+  await page.getByRole("textbox", { name: "Senha" }).fill(password!);
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
-  await expect(page.getByRole("link", { name: "Minha Coleção" })).toBeVisible();
+  await expect(
+    page.getByRole("link", { exact: true, name: "Minha Coleção" })
+  ).toBeVisible();
 
   await page.getByRole("button", { name: "Minha conta" }).click();
   await page.getByRole("menuitem", { name: "Editar perfil" }).click();

@@ -904,9 +904,33 @@
     white-space: normal;
   }
 
+  .weatherScroller {
+    overflow-x: visible;
+  }
+
   .weatherGrid {
-    grid-template-columns: repeat(6, minmax(132px, 1fr));
-    min-width: 852px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .weatherBlock {
+    min-width: 0;
+  }
+
+  .weatherBlockHeader,
+  .weatherBlockValue {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 720px) {
+  .manualGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .weatherGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -927,10 +951,6 @@
   .rankingCardFooter,
   .rankingDetailsLink {
     width: 100%;
-  }
-
-  .manualGrid {
-    grid-template-columns: 1fr;
   }
 
   .choiceOptionsGrid {

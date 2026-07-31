@@ -6,6 +6,13 @@ import { useEffect, useRef, useState } from "react";
 const MAX_FONT_SIZE = 72;
 const MIN_FONT_SIZE = 38;
 
+function readPixelCustomProperty(element: HTMLElement, name: string, fallback: number) {
+  const value = window.getComputedStyle(element).getPropertyValue(name).trim();
+  const parsed = Number.parseFloat(value);
+
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 type FitFragranceTitleProps = {
   children: string;
   className?: string;
@@ -33,12 +40,26 @@ export function FitFragranceTitle({ children, className }: FitFragranceTitleProp
           return;
         }
 
-        title.style.fontSize = `${MAX_FONT_SIZE}px`;
+        const maxFontSize = readPixelCustomProperty(
+          title,
+          "--fit-title-max-size",
+          MAX_FONT_SIZE
+        );
+        const minFontSize = readPixelCustomProperty(
+          title,
+          "--fit-title-min-size",
+          MIN_FONT_SIZE
+        );
+
+        title.style.fontSize = `${maxFontSize}px`;
         const measuredWidth = title.scrollWidth;
         const nextSize =
           measuredWidth > availableWidth
-            ? Math.max(MIN_FONT_SIZE, Math.floor((MAX_FONT_SIZE * availableWidth) / measuredWidth))
-            : MAX_FONT_SIZE;
+            ? Math.max(
+                minFontSize,
+                Math.floor((maxFontSize * availableWidth) / measuredWidth)
+              )
+            : maxFontSize;
 
         title.style.fontSize = "";
         setFontSize(nextSize);
