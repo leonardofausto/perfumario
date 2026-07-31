@@ -1,5 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/perfumes/actions", () => ({
   toggleFavoriteAction: vi.fn().mockResolvedValue({ status: "success" }),
@@ -57,6 +57,14 @@ const perfume: PerfumeDetailData = {
 };
 
 describe("PerfumeDetail", () => {
+  beforeEach(() => {
+    vi.setSystemTime(new Date("2026-07-21T12:00:00.000Z"));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders identity and explanation without administrative actions or olfactory family chips", () => {
     render(<PerfumeDetail perfume={perfume} />);
 
@@ -166,5 +174,105 @@ describe("PerfumeDetail", () => {
     expect(screen.getByText("Noite: 95%")).toBeInTheDocument();
     expect(screen.getByText("Dia Inteiro: Não informado")).toBeInTheDocument();
     expect(screen.getByText("Fechado: 55%")).toBeInTheDocument();
+  });
+
+  it("renders a richer journey summary with real percentages and accessible satisfaction", () => {
+    render(
+      <PerfumeDetail
+        perfume={perfume}
+        journeySummary={{
+          usageCount: 3,
+          lastUsedAt: "2026-07-19T15:30:00.000Z",
+          averageSatisfaction: 3.5,
+          complimentsCount: 2,
+          frequentOccasion: "ar_livre",
+          occasionCounts: { ar_livre: 2, formal: 1 },
+          favoriteMoment: "tarde",
+          momentCounts: { tarde: 2, noite: 1 },
+        }}
+      />
+    );
+
+    const journey = screen.getByLabelText("Resumo da jornada desta fragrância");
+
+    expect(screen.getByText("MEMÓRIA OLFATIVA")).toBeInTheDocument();
+    expect(within(journey).getByText("USOS REGISTRADOS")).toBeInTheDocument();
+    expect(within(journey).getByText("3")).toBeInTheDocument();
+    expect(within(journey).getByText("ÚLTIMO USO")).toBeInTheDocument();
+    expect(within(journey).getByText("19/07/2026")).toBeInTheDocument();
+    expect(within(journey).getByText("Há 2 dias")).toBeInTheDocument();
+    expect(within(journey).getByText("SATISFAÇÃO MÉDIA")).toBeInTheDocument();
+    expect(within(journey).getByText("3,5/5")).toBeInTheDocument();
+    expect(within(journey).getByLabelText("Satisfação média: 3,5 de 5")).toBeInTheDocument();
+    expect(within(journey).getByText("ELOGIOS RECEBIDOS")).toBeInTheDocument();
+    expect(within(journey).getByText("Total")).toBeInTheDocument();
+    expect(within(journey).getByText("OCASIÃO MAIS FREQUENTE")).toBeInTheDocument();
+    expect(within(journey).getByText("Ar livre")).toBeInTheDocument();
+    expect(within(journey).getAllByText("67%")).toHaveLength(2);
+    expect(within(journey).getByText("MOMENTO FAVORITO")).toBeInTheDocument();
+    expect(within(journey).getByText("Tarde")).toBeInTheDocument();
+    expect(within(journey).getByText("Continue registrando seus usos para revelar ainda mais insights sobre seus hábitos e preferências.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Ver na Jornada" })).toHaveAttribute(
+      "href",
+      "/jornada?q=Essencial"
+    );
+    expect(screen.queryByText("Sobre estas metricas")).not.toBeInTheDocument();
+  });
+
+  it("keeps single-use journey percentages honest", () => {
+    render(
+      <PerfumeDetail
+        perfume={perfume}
+        journeySummary={{
+          usageCount: 1,
+          lastUsedAt: "2026-07-19T21:30:00.000Z",
+          averageSatisfaction: 3,
+          complimentsCount: 0,
+          frequentOccasion: "casual",
+          occasionCounts: { casual: 1 },
+          favoriteMoment: "noite",
+          momentCounts: { noite: 1 },
+        }}
+      />
+    );
+
+    const journey = screen.getByLabelText("Resumo da jornada desta fragrância");
+    expect(within(journey).getByText("3,0/5")).toBeInTheDocument();
+    expect(within(journey).getByText("Casual")).toBeInTheDocument();
+    expect(within(journey).getByText("Noite")).toBeInTheDocument();
+    expect(within(journey).getAllByText("100%")).toHaveLength(2);
+  });
+
+  it("uses neutral states for missing journey dimensions", () => {
+    render(
+      <PerfumeDetail
+        perfume={perfume}
+        journeySummary={{
+          usageCount: 2,
+          lastUsedAt: null,
+          averageSatisfaction: null,
+          complimentsCount: 0,
+          frequentOccasion: null,
+          occasionCounts: {},
+          favoriteMoment: null,
+          momentCounts: {},
+        }}
+      />
+    );
+
+    const journey = screen.getByLabelText("Resumo da jornada desta fragrância");
+    expect(within(journey).getByText("Não informado")).toBeInTheDocument();
+    expect(within(journey).getByText("Sem avaliação")).toBeInTheDocument();
+    expect(within(journey).getByLabelText("Satisfação média ainda sem dados")).toBeInTheDocument();
+    expect(within(journey).getAllByText("Ainda sem dados")).toHaveLength(2);
+    expect(within(journey).queryByText("0%")).not.toBeInTheDocument();
+  });
+
+  it("keeps the first-use state compact when there is no journey history", () => {
+    render(<PerfumeDetail perfume={perfume} />);
+
+    expect(screen.getByText("Registre o primeiro uso para construir esta memória.")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Resumo da jornada desta fragrância")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Ver na Jornada" })).not.toBeInTheDocument();
   });
 });
