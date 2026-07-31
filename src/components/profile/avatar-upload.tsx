@@ -47,8 +47,8 @@ export function AvatarUpload({ avatarUrl, displayName }: AvatarUploadProps) {
         )}
       </span>
       <form action={formAction} className={styles.form}>
-        <label htmlFor="avatar">Foto do perfil</label>
         <input
+          aria-label="Foto do perfil"
           accept="image/jpeg,image/png,image/webp"
           className={styles.fileInput}
           id="avatar"
@@ -62,6 +62,9 @@ export function AvatarUpload({ avatarUrl, displayName }: AvatarUploadProps) {
           }}
           type="file"
         />
+        <label className={styles.fileButton} htmlFor="avatar">
+          Foto do perfil
+        </label>
         <p className={styles.helper}>JPEG, PNG ou WebP · máximo de 5 MB.</p>
         {state.fieldErrors?.avatar ? (
           <p className={styles.error} role="alert">

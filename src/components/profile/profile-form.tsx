@@ -21,10 +21,10 @@ export function ProfileForm({ email, profile }: ProfileFormProps) {
   return (
     <div className={styles.profileGrid}>
       <AvatarUpload avatarUrl={profile.avatarUrl} displayName={profile.displayName} />
-      <section className={styles.card}>
+      <section className={`${styles.card} ${styles.accountCard}`}>
         <h2>Dados da conta</h2>
         <p className={styles.cardIntro}>Escolha como seu nome aparece dentro do Perfumário.</p>
-        <form action={formAction} className={styles.form}>
+        <form action={formAction} className={`${styles.form} ${styles.accountForm}`}>
           <label htmlFor="displayName">Nome de exibição</label>
           <input
             aria-describedby={state.fieldErrors?.displayName ? "display-name-error" : undefined}

@@ -30,6 +30,25 @@
   gap: 9px;
 }
 
+.avatarStage .form {
+  width: min(100%, 262px);
+  justify-items: stretch;
+}
+
+.accountCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.accountForm {
+  flex: 1;
+}
+
+.accountForm button {
+  margin-top: auto;
+  transform: translateY(18px);
+}
+
 .form label {
   margin-top: 5px;
   font-size: 0.76rem;
@@ -54,6 +73,7 @@
 .form button,
 .uploadButton {
   display: inline-flex;
+  height: 46px;
   min-height: 46px;
   align-items: center;
   justify-content: center;
@@ -101,8 +121,31 @@
 }
 
 .fileInput {
-  width: 100%;
-  font-size: 0.75rem;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.fileButton {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 17px;
+  border: 1px solid var(--sand);
+  border-radius: 9px;
+  background: #fffdf8;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.fileInput:focus-visible + .fileButton {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
 }
 
 .helper {
