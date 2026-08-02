@@ -1,4 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
+import { createElement } from "react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -14,6 +15,22 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/features/perfumes/actions", () => ({
   deletePerfumeAction: mocks.deletePerfumeAction,
   toggleFavoriteAction: mocks.toggleFavoriteAction,
+}));
+vi.mock("next/image", () => ({
+  default: ({
+    alt,
+    priority,
+    src,
+  }: {
+    alt: string;
+    priority?: boolean;
+    src: string;
+  }) =>
+    createElement("img", {
+      alt,
+      "data-priority": priority ? "true" : "false",
+      src,
+    }),
 }));
 
 import type { PerfumeSummary } from "@/features/perfumes/types";
@@ -74,6 +91,13 @@ function makePerfume(index: number): PerfumeSummary {
     olfactoryFamilies: ["Amadeirado"],
     imageUrl: null,
     isFavorite: false,
+  };
+}
+
+function makePerfumeWithImage(index: number): PerfumeSummary {
+  return {
+    ...makePerfume(index),
+    imageUrl: `https://signed.example/perfume-${index}.webp`,
   };
 }
 
@@ -165,6 +189,20 @@ describe("CollectionView", () => {
     await user.selectOptions(screen.getByLabelText("Perfumes por página"), "50");
     expect(screen.getAllByRole("link", { name: /ver detalhes/i })).toHaveLength(31);
     expect(screen.getByText("1-31 de 31 perfumes")).toBeInTheDocument();
+  });
+
+  it("prioritizes only the first above-the-fold gallery images", () => {
+    const imagePerfumes = Array.from({ length: 6 }, (_, index) =>
+      makePerfumeWithImage(index + 1),
+    );
+
+    render(<CollectionView perfumes={imagePerfumes} />);
+
+    expect(
+      screen
+        .getAllByRole("img", { name: /frasco de perfume/i })
+        .map((image) => image.getAttribute("data-priority")),
+    ).toEqual(["true", "true", "true", "true", "false", "false"]);
   });
 
   it("shows a truthful empty state and the dedicated add route", () => {

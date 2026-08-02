@@ -930,8 +930,9 @@ describe("RecommenderView", () => {
     await user.click(screen.getByRole("button", { name: "Revelar meu Top 3" }));
     await user.click(screen.getByRole("button", { name: "Trabalho" }));
 
+    expect(screen.getByText("Top 3 desatualizado")).toBeInTheDocument();
     expect(
-      screen.getByText("Ajustes alterados. Clique novamente para recalcular o Top 3.")
+      screen.getByText("Clique em Revelar (Novamente)")
     ).toBeInTheDocument();
   });
 
@@ -945,8 +946,9 @@ describe("RecommenderView", () => {
     await user.type(screen.getByLabelText("Temperatura"), "24");
     await user.click(screen.getByRole("button", { name: "Contexto manual ativo" }));
 
+    expect(screen.getByText("Top 3 desatualizado")).toBeInTheDocument();
     expect(
-      screen.getByText("Ajustes alterados. Clique novamente para recalcular o Top 3.")
+      screen.getByText("Clique em Revelar (Novamente)")
     ).toBeInTheDocument();
   });
 
@@ -1010,9 +1012,7 @@ describe("RecommenderView", () => {
     expect(screen.getByText("Volta Redonda")).toBeInTheDocument();
     expect(screen.queryByText("Contexto manual")).toBeNull();
     expect(screen.queryByText("Persistido")).toBeNull();
-    expect(
-      screen.queryByText("Ajustes alterados. Clique novamente para recalcular o Top 3.")
-    ).toBeNull();
+    expect(screen.queryByText("Top 3 desatualizado")).toBeNull();
     expect(screen.getByRole("button", { name: "Trabalho" })).toHaveAttribute(
       "aria-pressed",
       "false"

@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/sign/private-avatars/**",
         protocol: "https",
       },
+      {
+        hostname: "otyxdfwoguvxakczxdpi.supabase.co",
+        pathname: "/storage/v1/object/sign/perfume-images/**",
+        protocol: "https",
+      },
     ],
   },
   reactStrictMode: true,

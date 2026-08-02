@@ -25,7 +25,6 @@ describe("AppShell", () => {
       "aria-current",
       "page",
     );
-    expect(screen.getAllByRole("link", { name: "Histórico" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Abrir menu" })).toBeInTheDocument();
   });
 

@@ -462,7 +462,7 @@ Componentes visuais recebem dados tipados por props e não instanciam clientes S
 - ausência de overflow horizontal;
 - navegação por teclado;
 - detalhe responsivo;
-- jornada autenticada completa.
+- fluxo autenticado completo.
 
 ## Critérios de aceite
 

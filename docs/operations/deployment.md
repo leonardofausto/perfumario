@@ -17,7 +17,7 @@ Secrets necessários no GitHub Actions:
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `E2E_USER_EMAIL` e `E2E_USER_PASSWORD` somente quando houver uma conta exclusiva para E2E
 
-Sem as credenciais E2E, a jornada autenticada é ignorada, mas o bloqueio anônimo e a responsividade pública continuam obrigatórios.
+Sem as credenciais E2E, o fluxo autenticado é ignorado, mas o bloqueio anônimo e a responsividade pública continuam obrigatórios.
 
 ## Supabase
 

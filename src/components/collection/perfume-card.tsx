@@ -12,12 +12,14 @@ import { DeletePerfumeButton } from "./delete-perfume-button";
 interface PerfumeCardProps {
   perfume: PerfumeSummary;
   favoritePending: boolean;
+  imagePriority?: boolean;
   onToggleFavorite: () => void;
 }
 
 export function PerfumeCard({
   perfume,
   favoritePending,
+  imagePriority = false,
   onToggleFavorite,
 }: PerfumeCardProps) {
   return (
@@ -66,6 +68,7 @@ export function PerfumeCard({
               className={styles.image}
               fill
               sizes="(min-width: 1280px) 24vw, (min-width: 760px) 48vw, 92vw"
+              priority={imagePriority}
               unoptimized
             />
           ) : (

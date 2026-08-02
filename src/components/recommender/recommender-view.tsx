@@ -1018,6 +1018,12 @@ export function RecommenderView({ perfumes }: { perfumes: RecommenderPerfume[] }
               <span className={styles.cardEyebrow}>AJUSTES DA ESCOLHA</span>
               <h2 id="choice-panel-title" className={styles.cardTitle}>Qual é o plano?</h2>
             </div>
+            {isRankingStale ? (
+              <div className={styles.staleRankingNotice} role="status">
+                <strong>Top 3 desatualizado</strong>
+                <span>Clique em Revelar (Novamente)</span>
+              </div>
+            ) : null}
           </div>
 
           <div className={styles.choiceGroupsGrid}>
@@ -1131,11 +1137,6 @@ export function RecommenderView({ perfumes }: { perfumes: RecommenderPerfume[] }
               </div>
             ) : top3Perfumes.length > 0 ? (
               <div className={styles.rankingList}>
-                {isRankingStale ? (
-                  <p className={styles.emptyRankingSub} role="status">
-                    Ajustes alterados. Clique novamente para recalcular o Top 3.
-                  </p>
-                ) : null}
                 {top3Perfumes.map((perfume, index) => {
                   const rankBadges = [
                     styles.rankBadge1,

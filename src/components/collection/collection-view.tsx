@@ -139,11 +139,12 @@ export function CollectionView({ perfumes }: CollectionViewProps) {
           {visiblePerfumes.length > 0 ? (
             <>
               <div className={styles.grid}>
-                {visiblePerfumes.map((perfume) => (
+                {visiblePerfumes.map((perfume, index) => (
                   <PerfumeCard
                     key={perfume.id}
                     perfume={perfume}
                     favoritePending={isPending}
+                    imagePriority={index < 4}
                     onToggleFavorite={() => toggleFavorite(perfume)}
                   />
                 ))}

@@ -410,6 +410,28 @@
   margin: 0;
 }
 
+.staleRankingNotice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  margin-left: auto;
+  border: 1px solid #dfcfb8;
+  border-radius: 10px;
+  background: #fffdf8;
+  color: #5f4f38;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.staleRankingNotice strong {
+  color: #1e513b;
+  font-weight: 750;
+}
+
 .sectionBlock {
   display: flex;
   flex-direction: column;
@@ -875,6 +897,16 @@
     margin-top: 10px;
   }
 
+  .cardHeader {
+    flex-wrap: wrap;
+  }
+
+  .staleRankingNotice {
+    width: 100%;
+    margin-left: 56px;
+    white-space: normal;
+  }
+
   .manualGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -935,6 +967,10 @@
 }
 
 @media (max-width: 560px) {
+  .staleRankingNotice {
+    margin-left: 0;
+  }
+
   .rankingCardTop {
     grid-template-columns: auto minmax(0, 1fr);
   }
