@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/perfumes/actions", () => ({
   createPerfumeAction: vi.fn().mockResolvedValue({ status: "idle" }),
@@ -8,6 +8,7 @@ vi.mock("@/features/perfumes/actions", () => ({
 }));
 
 import type { PerfumeDetail } from "@/features/perfumes/types";
+import { createPerfumeAction, updatePerfumeAction } from "@/features/perfumes/actions";
 
 import { PerfumeForm } from "./perfume-form";
 
@@ -41,7 +42,202 @@ const perfume: PerfumeDetail = {
   updatedAt: "2026-07-26T10:00:00.000Z",
 };
 
+function autofillField<T>(value: T | null) {
+  return {
+    value,
+    confidence: value === null ? 0 : 0.9,
+    origin: value === null ? "unavailable" : "official",
+    sources: value === null ? [] : ["official"],
+    conflicts: [],
+    inferred: false,
+  };
+}
+
+function autofillResult(overrides: Record<string, unknown> = {}) {
+  const fields = {
+    name: autofillField("Fakhar Black"),
+    brand: autofillField("Lattafa"),
+    description: autofillField("Descrição encontrada"),
+    concentration: autofillField("eau_de_parfum"),
+    categoryType: autofillField("arabe"),
+    audience: autofillField("masculine"),
+    launchYear: autofillField(2022),
+    inspirationKind: autofillField("inspiration"),
+    inspiredBy: autofillField("Y Eau de Parfum"),
+    olfactoryFamilies: autofillField(["Aromático"]),
+    pyramid: autofillField({
+      top: "Maçã - Bergamota",
+      heart: "Lavanda - Sálvia",
+      base: "Cedro - Fava tonka",
+    }),
+    accords: autofillField("Aromático: 90"),
+    metrics: autofillField(null),
+    ...overrides,
+  };
+  return {
+    status: "success",
+    result: {
+      query: { name: "Fakhar Black", brand: "Lattafa" },
+      fields,
+      sources: [
+        {
+          id: "official",
+          kind: "official",
+          title: "Lattafa",
+          url: "https://lattafa.com/fakhar-black",
+        },
+      ],
+      confidence: 0.9,
+      explanation: "Resultado consistente.",
+      warnings: [],
+    },
+  };
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.mocked(createPerfumeAction).mockClear();
+  vi.mocked(updatePerfumeAction).mockClear();
+});
+
 describe("PerfumeForm", () => {
+  it("applies researched fields to a new editable form without image, format, or autosave", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(autofillResult()), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      ),
+    );
+    render(<PerfumeForm />);
+
+    const image = new File(["cover"], "cover.webp", { type: "image/webp" });
+    Object.defineProperty(URL, "createObjectURL", {
+      configurable: true,
+      value: vi.fn(() => "blob:cover"),
+    });
+    Object.defineProperty(URL, "revokeObjectURL", {
+      configurable: true,
+      value: vi.fn(),
+    });
+    fireEvent.change(screen.getByLabelText("Imagem do perfume"), {
+      target: { files: [image] },
+    });
+    fireEvent.change(screen.getByLabelText("Nome do perfume"), {
+      target: { value: "Fakhar Black" },
+    });
+    fireEvent.change(screen.getByLabelText("Marca"), {
+      target: { value: "Lattafa" },
+    });
+    await user.click(screen.getByRole("button", { name: "Buscar dados" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Aplicar ao cadastro" }),
+    );
+
+    expect(screen.getByLabelText("Nome do perfume")).toHaveValue("Fakhar Black");
+    expect(screen.getByLabelText("Explicativo do perfume")).toHaveValue(
+      "Descrição encontrada",
+    );
+    expect(screen.getByLabelText("Relação com outra fragrância")).toHaveValue(
+      "inspiration",
+    );
+    expect(screen.getByLabelText("Perfume de referência")).toHaveValue(
+      "Y Eau de Parfum",
+    );
+    expect(screen.getByLabelText("Formato na estante")).toHaveValue("");
+    expect(
+      (screen.getByLabelText("Imagem do perfume") as HTMLInputElement).files?.[0],
+    ).toBe(image);
+    expect(createPerfumeAction).not.toHaveBeenCalled();
+    expect(updatePerfumeAction).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("Explicativo do perfume"), {
+      target: { value: "Editada" },
+    });
+    expect(screen.getByLabelText("Explicativo do perfume")).toHaveValue("Editada");
+  });
+
+  it("preserves edit data until selected fields are explicitly applied", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify(
+            autofillResult({
+              name: autofillField(perfume.name),
+              brand: autofillField("Marca encontrada"),
+              description: autofillField("Descrição nova"),
+            }),
+          ),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+    render(<PerfumeForm perfume={perfume} />);
+
+    await user.click(screen.getByRole("button", { name: "Buscar dados" }));
+    expect(await screen.findByText("Descrição nova")).toBeInTheDocument();
+    expect(screen.getByLabelText("Marca")).toHaveValue("Natura");
+    expect(screen.getByLabelText("Explicativo do perfume")).toHaveValue(
+      "Descrição existente",
+    );
+    expect(screen.getByLabelText("Formato na estante")).toHaveValue("decant");
+
+    await user.click(screen.getByRole("checkbox", { name: /Descrição/ }));
+    await user.click(screen.getByRole("button", { name: "Aplicar selecionados" }));
+
+    expect(screen.getByLabelText("Marca")).toHaveValue("Natura");
+    expect(screen.getByLabelText("Explicativo do perfume")).toHaveValue(
+      "Descrição nova",
+    );
+    expect(screen.getByLabelText("Formato na estante")).toHaveValue("decant");
+    expect(updatePerfumeAction).not.toHaveBeenCalled();
+
+    await user.clear(screen.getByLabelText("Explicativo do perfume"));
+    await user.type(screen.getByLabelText("Explicativo do perfume"), "Manual");
+    expect(screen.getByLabelText("Explicativo do perfume")).toHaveValue("Manual");
+  });
+
+  it("applies relation and reference atomically when an edit becomes original", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify(
+            autofillResult({
+              name: autofillField(perfume.name),
+              brand: autofillField(perfume.brand),
+              inspirationKind: autofillField("original"),
+              inspiredBy: autofillField(null),
+            }),
+          ),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+    render(<PerfumeForm perfume={perfume} />);
+
+    await user.click(screen.getByRole("button", { name: "Buscar dados" }));
+    await user.click(
+      await screen.findByRole("checkbox", { name: /Relação e referência/ }),
+    );
+    await user.click(screen.getByRole("button", { name: "Aplicar selecionados" }));
+
+    expect(screen.getByLabelText("Relação com outra fragrância")).toHaveValue(
+      "original",
+    );
+    expect(screen.getByLabelText("Perfume de referência")).toHaveValue("");
+    expect(screen.getByLabelText("Perfume de referência")).toHaveAttribute(
+      "readonly",
+    );
+    expect(updatePerfumeAction).not.toHaveBeenCalled();
+  });
+
   it("renders blank create defaults and compact edit sections", () => {
     render(<PerfumeForm />);
 
@@ -349,6 +545,23 @@ describe("PerfumeForm", () => {
     );
     expect(screen.queryByText(longTag)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Notas de coração")).toHaveValue("");
+  });
+
+  it("requires a manual bottle format for new perfumes and preserves the edited value", () => {
+    const { unmount } = render(<PerfumeForm />);
+
+    expect(screen.getByLabelText("Formato na estante")).toHaveValue("");
+    expect(screen.getByLabelText("Formato na estante")).toBeRequired();
+    expect(
+      screen.getByRole("option", { name: "Selecione o formato" }),
+    ).toBeDisabled();
+
+    unmount();
+    render(<PerfumeForm perfume={perfume} />);
+
+    expect(screen.getByLabelText("Formato na estante")).toHaveValue(
+      perfume.bottleFormat,
+    );
   });
 
   it("keeps accords editable without family tags or form preview bars", () => {

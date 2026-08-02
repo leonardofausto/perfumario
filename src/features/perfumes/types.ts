@@ -18,6 +18,10 @@ export type InspirationKind = (typeof INSPIRATION_KINDS)[number];
 export type BottleFormat = (typeof BOTTLE_FORMATS)[number];
 export type Concentration = (typeof CONCENTRATIONS)[number];
 export type PerfumePercentField = (typeof PERFUME_PERCENT_FIELDS)[number];
+export type CategoryType =
+  (typeof import("./constants").CATEGORY_TYPE_OPTIONS)[number]["value"];
+export type Audience =
+  (typeof import("./constants").AUDIENCE_OPTIONS)[number]["value"];
 
 export interface PerfumeScore {
   category: ScoreCategory;

@@ -22,14 +22,23 @@ import {
   TIME_METRICS,
 } from "@/features/perfumes/constants";
 import type {
+  Audience,
+  CategoryType,
+  Concentration,
   InspirationKind,
   NoteLayer,
   PerfumeDetail,
   PerfumeScore,
   ScoreCategory,
 } from "@/features/perfumes/types";
+import type { AutofillMetrics } from "@/features/perfume-autofill/types";
 import type { ActionState } from "@/lib/auth/types";
 
+import {
+  PerfumeAutofill,
+  type AutofillApplyValues,
+  type AutofillFormValues,
+} from "./perfume-autofill";
 import styles from "./form.module.css";
 
 type ScoreGroup = {
@@ -265,10 +274,28 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
   const [state, formAction, pending] = useActionState(action, {
     status: "idle",
   } satisfies ActionState<PerfumeActionFields>);
+  const [brand, setBrand] = useState(perfume?.brand ?? "");
+  const [name, setName] = useState(perfume?.name ?? "");
+  const [description, setDescription] = useState(perfume?.description ?? "");
+  const [concentration, setConcentration] = useState<Concentration>(
+    perfume?.concentration ?? "unknown",
+  );
+  const [categoryType, setCategoryType] = useState<CategoryType | null>(
+    (perfume?.categoryType as CategoryType | null) ?? null,
+  );
+  const [audience, setAudience] = useState<Audience | null>(
+    (perfume?.audience as Audience | null) ?? null,
+  );
+  const [launchYear, setLaunchYear] = useState<number | null>(
+    perfume?.launchYear ?? null,
+  );
   const [inspirationKind, setInspirationKind] = useState<InspirationKind>(
     perfume?.inspirationKind ?? "original",
   );
   const [inspiredBy, setInspiredBy] = useState(perfume?.inspiredBy ?? "");
+  const [olfactoryFamilies, setOlfactoryFamilies] = useState(
+    perfume?.olfactoryFamilies ?? [],
+  );
   const [sensoryValues, setSensoryValues] = useState<SensoryValues>({
     intensity: perfume?.intensity ?? null,
     sweetness: perfume?.sweetness ?? null,
@@ -316,6 +343,77 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
 
       return file ? URL.createObjectURL(file) : null;
     });
+  }
+
+  function currentMetrics(): AutofillMetrics {
+    const metrics = Object.fromEntries(
+      [
+        ...PERFORMANCE_METRICS,
+        ...SEASON_METRICS,
+        ...OCCASION_METRICS,
+        ...TIME_METRICS,
+        ...ENVIRONMENT_METRICS,
+      ].map((metricKey) => [
+        metricKey,
+        scores.find((score) => score.metricKey === metricKey)?.score ?? null,
+      ]),
+    ) as unknown as AutofillMetrics;
+
+    for (const field of sensoryOrder) metrics[field] = sensoryValues[field];
+    return metrics;
+  }
+
+  const autofillCurrent: AutofillFormValues = {
+    name,
+    brand,
+    description,
+    concentration,
+    categoryType,
+    audience,
+    launchYear,
+    inspirationKind,
+    inspiredBy: inspiredBy || null,
+    olfactoryFamilies,
+    pyramid: notes,
+    accords,
+    metrics: currentMetrics(),
+  };
+
+  function applyAutofill(values: AutofillApplyValues) {
+    if (values.name !== undefined) setName(values.name);
+    if (values.brand !== undefined) setBrand(values.brand);
+    if (values.description !== undefined) setDescription(values.description);
+    if (values.concentration !== undefined) setConcentration(values.concentration);
+    if (values.categoryType !== undefined) setCategoryType(values.categoryType);
+    if (values.audience !== undefined) setAudience(values.audience);
+    if (values.launchYear !== undefined) setLaunchYear(values.launchYear);
+    if (values.olfactoryFamilies !== undefined) {
+      setOlfactoryFamilies(values.olfactoryFamilies);
+    }
+    if (values.pyramid !== undefined) setNotes(values.pyramid);
+    if (values.accords !== undefined) setAccords(values.accords);
+    if (values.metrics !== undefined) {
+      setScores((currentScores) =>
+        currentScores.map((score) => ({
+          ...score,
+          score: values.metrics?.[score.metricKey as keyof AutofillMetrics] ?? null,
+        })),
+      );
+      setSensoryValues((currentValues) =>
+        Object.fromEntries(
+          sensoryOrder.map((field) => [
+            field,
+            values.metrics?.[field] ?? currentValues[field],
+          ]),
+        ) as SensoryValues,
+      );
+    }
+    if (values.inspirationKind !== undefined) {
+      setInspirationKind(values.inspirationKind);
+      setInspiredBy(
+        values.inspirationKind === "original" ? "" : (values.inspiredBy ?? ""),
+      );
+    }
   }
 
   const backHref = perfume ? `/colecao/${perfume.id}` : "/colecao";
@@ -390,24 +488,43 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
           <div className={`${styles.fields} ${styles.identityGrid}`}>
             <label className={styles.identityBrand}>
               Marca
-              <input name="brand" defaultValue={perfume?.brand ?? ""} autoComplete="off" />
+              <input
+                name="brand"
+                value={brand}
+                autoComplete="off"
+                onChange={(event) => setBrand(event.target.value)}
+              />
               {errorFor(state, "brand") ? (
                 <span className={styles.fieldError}>{errorFor(state, "brand")}</span>
               ) : null}
             </label>
             <label className={styles.identityName}>
               Nome do perfume
-              <input name="name" defaultValue={perfume?.name ?? ""} autoComplete="off" />
+              <input
+                name="name"
+                value={name}
+                autoComplete="off"
+                onChange={(event) => setName(event.target.value)}
+              />
               {errorFor(state, "name") ? (
                 <span className={styles.fieldError}>{errorFor(state, "name")}</span>
               ) : null}
             </label>
+            <PerfumeAutofill
+              mode={perfume ? "edit" : "create"}
+              query={{ name, ...(brand.trim() ? { brand } : {}) }}
+              current={autofillCurrent}
+              onApply={applyAutofill}
+            />
             <label className={styles.selectField}>
               Concentração
               <select
                 name="concentration"
-                defaultValue={perfume?.concentration ?? "unknown"}
+                value={concentration}
                 autoComplete="off"
+                onChange={(event) =>
+                  setConcentration(event.target.value as Concentration)
+                }
               >
                 <option value="unknown">Não informado</option>
                 <option value="body_splash">Body Splash</option>
@@ -422,8 +539,11 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
               Categoria
               <select
                 name="categoryType"
-                defaultValue={perfume?.categoryType ?? ""}
+                value={categoryType ?? ""}
                 autoComplete="off"
+                onChange={(event) =>
+                  setCategoryType((event.target.value || null) as CategoryType | null)
+                }
               >
                 <option value="">Não informado</option>
                 {CATEGORY_TYPE_OPTIONS.map((option) => (
@@ -455,7 +575,9 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 value={inspiredBy}
                 autoComplete="off"
                 readOnly={inspirationKind === "original"}
+                disabled={inspirationKind === "original"}
                 aria-readonly={inspirationKind === "original"}
+                aria-disabled={inspirationKind === "original"}
                 onChange={(event) => setInspiredBy(event.target.value)}
               />
               {errorFor(state, "inspiredBy") ? (
@@ -472,23 +594,41 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                   autoComplete="off"
                   min={1800}
                   max={2200}
-                  defaultValue={perfume?.launchYear ?? ""}
+                  value={launchYear ?? ""}
+                  onChange={(event) =>
+                    setLaunchYear(
+                      event.target.value === "" ? null : Number(event.target.value),
+                    )
+                  }
                 />
               </label>
               <label className={styles.selectField}>
                 Formato na estante
                 <select
                   name="bottleFormat"
-                  defaultValue={perfume?.bottleFormat ?? "full_bottle"}
+                  defaultValue={perfume?.bottleFormat ?? ""}
                   autoComplete="off"
+                  required
                 >
+                  {!perfume ? (
+                    <option value="" disabled>
+                      Selecione o formato
+                    </option>
+                  ) : null}
                   <option value="decant">Decant</option>
                   <option value="full_bottle">Frasco</option>
                 </select>
               </label>
               <label className={styles.selectField}>
                 Público
-                <select name="audience" defaultValue={perfume?.audience ?? ""} autoComplete="off">
+                <select
+                  name="audience"
+                  value={audience ?? ""}
+                  autoComplete="off"
+                  onChange={(event) =>
+                    setAudience((event.target.value || null) as Audience | null)
+                  }
+                >
                   <option value="">Não informado</option>
                   {AUDIENCE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -504,8 +644,9 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 name="description"
                 autoComplete="off"
                 rows={4}
-                defaultValue={perfume?.description ?? ""}
+                value={description}
                 required
+                onChange={(event) => setDescription(event.target.value)}
               />
               {errorFor(state, "description") ? (
                 <span className={styles.fieldError}>{errorFor(state, "description")}</span>
@@ -571,7 +712,7 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
             <input
               type="hidden"
               name="olfactoryFamilies"
-              value={JSON.stringify(perfume?.olfactoryFamilies ?? [])}
+              value={JSON.stringify(olfactoryFamilies)}
             />
             <input
               type="hidden"
