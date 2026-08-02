@@ -53,18 +53,25 @@ criar um grande painel permanente para cada perfume.
 7. `07-migracao-do-detalhe.md`
 8. `08-validacao-final.md`
 
-## Como executar
+## Como solicitar uma sprint
 
-Execute somente uma sprint por solicitação. Antes de editar:
+Para executar qualquer sprint, utilize sempre um único pedido como o exemplo
+abaixo.
 
-- leia este README e a sprint escolhida;
-- consulte o Graphify com uma pergunta focada;
-- use skills e plugins apenas quando reduzirem leitura ou risco;
-- preserve alterações locais fora do escopo;
-- apresente um plano curto e não avance para outra sprint.
+```text
+Antes de iniciar, leia o arquivo docs/diario-de-uso-fase-2-sprints/README.md para entender as regras globais, os critérios de aceite e a forma de trabalho desta coleção de sprints.
+Em seguida, execute somente a sprint descrita em docs/diario-de-uso-fase-2-sprints/XX-nome-da-sprint.md.
+Não execute tarefas de outras sprints.
 
-Ao final, execute apenas as validações previstas na sprint e rode
-`graphify update .` quando houver alteração de código.
+Antes de editar qualquer arquivo:
+- use Graphify para localizar apenas as dependências necessárias;
+- utilize skills somente quando forem adequadas ao tipo de trabalho;
+- utilize plugins apenas quando houver benefício concreto na economia de tokens ou redução de leitura desnecessária.
+
+Apresente um plano resumido da sprint antes de implementar.
+Durante a implementação, mantenha-se estritamente dentro do escopo da sprint.
+Ao final, execute apenas as validações previstas na própria sprint, atualize o Graphify com `graphify update .` quando houver alterações no código e encerre a execução.
+```
 
 ## Contratos preservados
 
@@ -98,4 +105,3 @@ Ao final, execute apenas as validações previstas na sprint e rode
 - Estados vazios e insuficientes são honestos.
 - Layout permanece fluido de `320px` a desktop amplo.
 - Testes, lint, typecheck e build são concluídos na validação final.
-
