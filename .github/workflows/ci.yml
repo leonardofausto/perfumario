@@ -50,3 +50,5 @@ jobs:
 
       - name: Browser journeys
         run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE: "true"
