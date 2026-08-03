@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { createAutofillRoute } from "./route";
+import { createAutofillRoute } from "./handler";
 
 function request(body: unknown) {
   return new Request("https://perfumario.example/api/perfumes/autofill", {

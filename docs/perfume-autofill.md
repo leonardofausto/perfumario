@@ -1,6 +1,10 @@
 # Pesquisa e autopreenchimento de fragrâncias
 
-Estado verificado em **2 de agosto de 2026**.
+Estado atualizado em **3 de agosto de 2026**.
+
+> A interface está em standby e fica oculta por padrão no cadastro e na edição.
+> Para reexibi-la futuramente, configure
+> `NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE=true` e reinicie o Next.js.
 
 ## Arquitetura e fluxo
 
@@ -35,6 +39,7 @@ Providers dependem de conta, chave, disponibilidade, termos e limites externos. 
 Somente nomes, sem valores:
 
 - `PERFUME_AUTOFILL_ENABLED`
+- `NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE`
 - `TAVILY_API_KEY`
 - `OPENAI_API_KEY`
 - `SUPABASE_SECRET_KEY`

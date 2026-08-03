@@ -101,6 +101,31 @@ afterEach(() => {
 });
 
 describe("PerfumeForm", () => {
+  it("keeps assisted research hidden by default in create and edit modes", () => {
+    const { unmount } = render(<PerfumeForm />);
+
+    expect(
+      screen.queryByRole("region", {
+        name: "Pesquisa de dados da fragrância",
+      }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Buscar dados" }),
+    ).not.toBeInTheDocument();
+
+    unmount();
+    render(<PerfumeForm perfume={perfume} />);
+
+    expect(
+      screen.queryByRole("region", {
+        name: "Pesquisa de dados da fragrância",
+      }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Buscar dados" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("applies researched fields to a new editable form without image, format, or autosave", async () => {
     const user = userEvent.setup();
     vi.stubGlobal(
@@ -112,7 +137,7 @@ describe("PerfumeForm", () => {
         }),
       ),
     );
-    render(<PerfumeForm />);
+    render(<PerfumeForm showAutofill />);
 
     const image = new File(["cover"], "cover.webp", { type: "image/webp" });
     Object.defineProperty(URL, "createObjectURL", {
@@ -177,7 +202,7 @@ describe("PerfumeForm", () => {
         ),
       ),
     );
-    render(<PerfumeForm perfume={perfume} />);
+    render(<PerfumeForm perfume={perfume} showAutofill />);
 
     await user.click(screen.getByRole("button", { name: "Buscar dados" }));
     expect(await screen.findByText("Descrição nova")).toBeInTheDocument();
@@ -220,7 +245,7 @@ describe("PerfumeForm", () => {
         ),
       ),
     );
-    render(<PerfumeForm perfume={perfume} />);
+    render(<PerfumeForm perfume={perfume} showAutofill />);
 
     await user.click(screen.getByRole("button", { name: "Buscar dados" }));
     await user.click(

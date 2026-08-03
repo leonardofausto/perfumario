@@ -267,7 +267,13 @@ function scoreValue(scores: PerfumeScore[], category: ScoreCategory, metricKey: 
   );
 }
 
-export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
+export function PerfumeForm({
+  perfume,
+  showAutofill = process.env.NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE === "true",
+}: {
+  perfume?: PerfumeDetail;
+  showAutofill?: boolean;
+}) {
   const action = perfume
     ? updatePerfumeAction.bind(null, perfume.id)
     : createPerfumeAction;
@@ -510,12 +516,14 @@ export function PerfumeForm({ perfume }: { perfume?: PerfumeDetail }) {
                 <span className={styles.fieldError}>{errorFor(state, "name")}</span>
               ) : null}
             </label>
-            <PerfumeAutofill
-              mode={perfume ? "edit" : "create"}
-              query={{ name, ...(brand.trim() ? { brand } : {}) }}
-              current={autofillCurrent}
-              onApply={applyAutofill}
-            />
+            {showAutofill ? (
+              <PerfumeAutofill
+                mode={perfume ? "edit" : "create"}
+                query={{ name, ...(brand.trim() ? { brand } : {}) }}
+                current={autofillCurrent}
+                onApply={applyAutofill}
+              />
+            ) : null}
             <label className={styles.selectField}>
               Concentração
               <select
