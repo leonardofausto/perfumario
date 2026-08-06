@@ -98,4 +98,11 @@ describe("PerfumeDetail", () => {
       "/recomendador",
     );
   });
+
+  it("does not show level and replenishment tracking in perfume details", () => {
+    render(<PerfumeDetail perfume={perfume} />);
+
+    expect(screen.queryByRole("region", { name: "Nível e reposição" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Salvar acompanhamento" })).toBeNull();
+  });
 });
