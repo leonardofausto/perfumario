@@ -6,6 +6,11 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import type { ActionState } from "@/lib/auth/types";
 import { createServerSupabase } from "@/lib/supabase/server";
+import {
+  canSetReplenishmentIntent,
+  containerStatusSchema,
+} from "@/features/experience/container-status";
+import type { ReplenishmentIntent } from "@/features/experience/types";
 
 import { removePerfumeImages, uploadPerfumeCover } from "./image";
 import { perfumeFormSchema } from "./schema";
@@ -150,6 +155,82 @@ function revalidatePerfumePaths(id: string) {
   revalidatePath(`/colecao/${id}`);
   revalidatePath("/dashboard");
   revalidatePath("/recomendador");
+}
+
+export type ContainerStatusActionFields = {
+  level: string;
+  replenishmentIntent: string;
+};
+
+export async function updateContainerStatusAction(
+  id: string,
+  _previousState: ActionState<ContainerStatusActionFields>,
+  formData: FormData,
+): Promise<ActionState<ContainerStatusActionFields>> {
+  const user = await requireUser();
+  const fields = {
+    level: typeof formData.get("level") === "string" ? String(formData.get("level")) : "",
+    replenishmentIntent:
+      typeof formData.get("replenishmentIntent") === "string"
+        ? String(formData.get("replenishmentIntent"))
+        : "",
+  };
+  const supabase = await createServerSupabase();
+  const { data: current, error: lookupError } = await supabase
+    .from("perfumes")
+    .select("bottle_format, replenishment_intent")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (lookupError || !current) {
+    return { status: "error", fields, message: "Perfume não encontrado." };
+  }
+
+  const parsed = containerStatusSchema.safeParse({
+    bottleFormat: current.bottle_format,
+    level: fields.level,
+    replenishmentIntent: fields.replenishmentIntent || null,
+  });
+  const currentIntent = current.replenishment_intent as ReplenishmentIntent | null;
+
+  if (
+    !parsed.success ||
+    !canSetReplenishmentIntent(
+      parsed.data.level,
+      parsed.data.replenishmentIntent,
+      currentIntent,
+    )
+  ) {
+    return {
+      status: "error",
+      fields,
+      message: "Revise o nível e a intenção de reposição.",
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("perfumes")
+    .update({
+      container_level: parsed.data.level,
+      container_level_updated_at: new Date().toISOString(),
+      replenishment_intent: parsed.data.replenishmentIntent,
+    })
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      status: "error",
+      fields,
+      message: "Não foi possível atualizar o acompanhamento.",
+    };
+  }
+
+  revalidatePerfumePaths(id);
+  return { status: "success", fields };
 }
 
 async function attachImage(

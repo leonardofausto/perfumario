@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { PerfumeSummary } from "@/features/perfumes/types";
+import { getContainerAlert } from "@/features/experience/container-status";
 
 import styles from "./collection.module.css";
 import { DeletePerfumeButton } from "./delete-perfume-button";
@@ -22,6 +23,8 @@ export function PerfumeCard({
   imagePriority = false,
   onToggleFavorite,
 }: PerfumeCardProps) {
+  const containerAlert = getContainerAlert(perfume.containerLevel);
+
   return (
     <article className={styles.card}>
       <div className={styles.cardActions}>
@@ -82,6 +85,18 @@ export function PerfumeCard({
         <div className={styles.cardContent}>
           <span className={styles.brand}>{perfume.brand}</span>
           <h2 className={styles.name}>{perfume.name}</h2>
+          {containerAlert ? (
+            <span
+              className={
+                containerAlert.tone === "action"
+                  ? styles.containerAlertAction
+                  : styles.containerAlertAttention
+              }
+              aria-label={`${perfume.name}: ${containerAlert.label}`}
+            >
+              {containerAlert.label}
+            </span>
+          ) : null}
         </div>
       </Link>
     </article>

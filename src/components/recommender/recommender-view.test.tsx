@@ -18,6 +18,9 @@ const perfumes: RecommenderPerfume[] = [
     elegance: null,
     sensuality: null,
     profileTags: [],
+    containerLevel: "unknown",
+    replenishmentIntent: null,
+    containerLevelUpdatedAt: null,
     id: "one",
     brand: "Marca",
     name: "Persistido",
@@ -617,6 +620,40 @@ describe("RecommenderView", () => {
 
     expect(screen.getByText("Persistido")).toBeInTheDocument();
     expect(screen.queryByText("Armaf Odyssey Mandarin Sky")).toBeNull();
+  });
+
+  it("shows real history evidence and level only as a score-neutral notice", async () => {
+    const user = userEvent.setup();
+    render(
+      <RecommenderView
+        perfumes={[
+          {
+            ...perfumes[0],
+            containerLevel: "low",
+            history: {
+              totalUses: 3,
+              complimentsTotal: 2,
+              complimentedUses: 2,
+              satisfactionTotal: 15,
+              satisfactionCount: 3,
+              performanceTotal: 12,
+              performanceCount: 3,
+              lastUsedAt: "2026-06-01T12:00:00.000Z",
+              byOccasion: {},
+              bySeason: {},
+            },
+          },
+        ]}
+      />,
+    );
+
+    await activateManualContext(user);
+    await user.click(screen.getByRole("button", { name: "Revelar meu Top 3" }));
+
+    expect(
+      screen.getByText("Tem boa média de satisfação no seu histórico."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Nível informado: No final.")).toBeInTheDocument();
   });
 
   it("orients the user when automatic context is active without a successful update", async () => {

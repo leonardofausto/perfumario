@@ -41,10 +41,12 @@ test("logs in, verifies the private shell, updates profile, restores it, and log
   await page.getByRole("button", { name: "Entrar" }).click();
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(
-    page.getByRole("link", { exact: true, name: "Minha Coleção" })
+    page.getByRole("link", { exact: true, name: "Minha coleção" })
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Minha conta" }).click();
+  const accountButton = page.getByRole("button", { name: "Minha conta" });
+  await accountButton.click();
+  await expect(accountButton).toHaveAttribute("aria-expanded", "true");
   await page.getByRole("menuitem", { name: "Editar perfil" }).click();
   await expect(page).toHaveURL(/\/perfil$/);
 
@@ -59,7 +61,7 @@ test("logs in, verifies the private shell, updates profile, restores it, and log
   await page.getByRole("button", { name: "Salvar alterações" }).click();
   await expect(page.getByText("Perfil atualizado.")).toBeVisible();
 
-  await page.getByRole("button", { name: "Minha conta" }).click();
+  await accountButton.click();
   await page.getByRole("button", { name: "Sair" }).click();
   await expect(page).toHaveURL(/\/$/);
 });

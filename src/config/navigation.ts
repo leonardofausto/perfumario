@@ -1,4 +1,11 @@
-import { LayoutGrid, LibraryBig, Sparkles, type LucideIcon } from "lucide-react";
+import {
+  BookOpen,
+  ChartColumn,
+  LayoutGrid,
+  LibraryBig,
+  Sparkles,
+  type LucideIcon,
+} from "lucide-react";
 
 export type NavigationItem = {
   href: string;
@@ -7,7 +14,9 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
-  { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
-  { href: "/colecao", icon: LibraryBig, label: "Minha Coleção" },
+  { href: "/dashboard", icon: LayoutGrid, label: "Visão geral" },
+  { href: "/colecao", icon: LibraryBig, label: "Minha coleção" },
   { href: "/recomendador", icon: Sparkles, label: "Recomendador" },
+  { href: "/diario", icon: BookOpen, label: "Diário de uso" },
+  { href: "/analises", icon: ChartColumn, label: "Análises" },
 ];

@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/features/perfumes/actions", () => ({
   toggleFavoriteAction: vi.fn().mockResolvedValue({ status: "success" }),
+  updateContainerStatusAction: vi.fn().mockResolvedValue({ status: "success" }),
 }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ refresh: vi.fn() }),
@@ -54,6 +55,9 @@ const perfume: PerfumeDetailData = {
   ],
   createdAt: "2026-07-26T10:00:00.000Z",
   updatedAt: "2026-07-26T11:00:00.000Z",
+  containerLevel: "low",
+  replenishmentIntent: "buy_again",
+  containerLevelUpdatedAt: "2026-08-03T12:00:00.000Z",
 };
 
 describe("PerfumeDetail", () => {

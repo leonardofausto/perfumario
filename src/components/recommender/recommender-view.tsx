@@ -1221,6 +1221,11 @@ export function RecommenderView({ perfumes }: { perfumes: RecommenderPerfume[] }
                           {explanation.attention}
                         </span>
                       ) : null}
+                      {explanation?.availabilityNotice ? (
+                        <span className={styles.rankingAttention}>
+                          {explanation.availabilityNotice}
+                        </span>
+                      ) : null}
 
                       <div className={styles.rankingCardFooter}>
                         <Link

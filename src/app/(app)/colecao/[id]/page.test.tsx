@@ -17,6 +17,7 @@ vi.mock("next/navigation", () => ({
 }));
 vi.mock("@/features/perfumes/actions", () => ({
   toggleFavoriteAction: vi.fn(),
+  updateContainerStatusAction: vi.fn().mockResolvedValue({ status: "success" }),
 }));
 
 import PerfumeDetailPage from "./page";

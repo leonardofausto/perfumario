@@ -5,6 +5,10 @@ import type {
   NOTE_LAYERS,
   PERFUME_PERCENT_FIELDS,
 } from "./constants";
+import type {
+  ContainerLevel,
+  ReplenishmentIntent,
+} from "@/features/experience/types";
 
 export type NoteLayer = (typeof NOTE_LAYERS)[number];
 export type ScoreCategory =
@@ -71,6 +75,9 @@ export interface PerfumeSummary {
   elegance: number | null;
   sensuality: number | null;
   profileTags: string[];
+  containerLevel: ContainerLevel;
+  replenishmentIntent: ReplenishmentIntent | null;
+  containerLevelUpdatedAt: string | null;
 }
 
 export interface PerfumeDetail extends PerfumeSummary {

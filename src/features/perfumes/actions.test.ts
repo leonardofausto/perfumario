@@ -24,6 +24,7 @@ import {
   createPerfumeAction,
   deletePerfumeAction,
   toggleFavoriteAction,
+  updateContainerStatusAction,
   updatePerfumeAction,
 } from "./actions";
 
@@ -173,6 +174,66 @@ describe("perfume mutations", () => {
     expect(update).toHaveBeenCalledWith({ is_favorite: true });
     expect(firstEq).toHaveBeenCalledWith("id", "perfume-1");
     expect(secondEq).toHaveBeenCalledWith("user_id", "user-1");
+  });
+
+  it("updates qualitative status only for the authenticated user's perfume", async () => {
+    const lookupSingle = vi.fn().mockResolvedValue({
+      data: { bottle_format: "full_bottle", replenishment_intent: null },
+      error: null,
+    });
+    const lookupUserEq = vi.fn(() => ({ maybeSingle: lookupSingle }));
+    const lookupIdEq = vi.fn(() => ({ eq: lookupUserEq }));
+    const maybeSingle = vi.fn().mockResolvedValue({ data: { id: "perfume-1" }, error: null });
+    const select = vi.fn(() => ({ maybeSingle }));
+    const userEq = vi.fn(() => ({ select }));
+    const idEq = vi.fn(() => ({ eq: userEq }));
+    const update = vi.fn(() => ({ eq: idEq }));
+    mocks.createServerSupabase.mockResolvedValue({
+      from: vi.fn(() => ({
+        select: vi.fn(() => ({ eq: lookupIdEq })),
+        update,
+      })),
+    });
+    const data = new FormData();
+    data.set("bottleFormat", "full_bottle");
+    data.set("level", "low");
+    data.set("replenishmentIntent", "buy_again");
+
+    const result = await updateContainerStatusAction("perfume-1", { status: "idle" }, data);
+
+    expect(result.status).toBe("success");
+    expect(update).toHaveBeenCalledWith({
+      container_level: "low",
+      container_level_updated_at: expect.any(String),
+      replenishment_intent: "buy_again",
+    });
+    expect(idEq).toHaveBeenCalledWith("id", "perfume-1");
+    expect(userEq).toHaveBeenCalledWith("user_id", "user-1");
+  });
+
+  it("rejects an incompatible replenishment intent before persistence", async () => {
+    const update = vi.fn();
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: { bottle_format: "decant", replenishment_intent: null },
+      error: null,
+    });
+    const userEq = vi.fn(() => ({ maybeSingle }));
+    const idEq = vi.fn(() => ({ eq: userEq }));
+    mocks.createServerSupabase.mockResolvedValue({
+      from: vi.fn(() => ({
+        select: vi.fn(() => ({ eq: idEq })),
+        update,
+      })),
+    });
+    const data = new FormData();
+    data.set("bottleFormat", "decant");
+    data.set("level", "low");
+    data.set("replenishmentIntent", "buy_again");
+
+    const result = await updateContainerStatusAction("perfume-1", { status: "idle" }, data);
+
+    expect(result.status).toBe("error");
+    expect(update).not.toHaveBeenCalled();
   });
 
   it("deletes only an owned perfume and then removes its private images", async () => {

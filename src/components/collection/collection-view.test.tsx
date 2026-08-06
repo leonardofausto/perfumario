@@ -47,12 +47,16 @@ const remodelContract = {
   elegance: null,
   sensuality: null,
   profileTags: [],
+  containerLevel: "unknown" as const,
+  replenishmentIntent: null,
+  containerLevelUpdatedAt: null,
 };
 
 const perfumes: PerfumeSummary[] = [
   {
     ...remodelContract,
     id: "amber",
+    containerLevel: "low",
     brand: "Zeta",
     name: "Ambar",
     concentration: "eau_de_parfum",
@@ -66,6 +70,7 @@ const perfumes: PerfumeSummary[] = [
   {
     ...remodelContract,
     id: "brisa",
+    containerLevel: "empty",
     brand: "Alfa",
     name: "Brisa",
     concentration: "eau_de_toilette",
@@ -128,6 +133,14 @@ describe("CollectionView", () => {
         .map((link) => link.getAttribute("href")),
     ).toEqual(["/colecao/brisa/editar", "/colecao/amber/editar"]);
     expect(screen.getAllByRole("button", { name: /excluir/i })).toHaveLength(2);
+  });
+
+  it("shows compact alerts only for low and empty items", () => {
+    render(<CollectionView perfumes={[...perfumes, makePerfume(3)]} />);
+
+    expect(screen.getByLabelText("Brisa: Acabou")).toBeInTheDocument();
+    expect(screen.getByLabelText("Ambar: No final")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Perfume 03: Não informado")).toBeNull();
   });
 
   it("favorites without navigating through the card link", async () => {

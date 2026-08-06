@@ -8,6 +8,7 @@ import {
   TIME_SELECTIONS,
 } from "./scoring-config";
 import { explainRecommenderResult } from "./reasons";
+import { evaluateRecommenderHistory } from "./history";
 import { scoreWeatherFit } from "./weather-fit";
 import type {
   RecommenderCriterion,
@@ -124,6 +125,11 @@ function scorePerfume(perfume: RecommenderPerfume, input: RecommenderInput) {
       ? contributions.reduce((sum, item) => sum + item.score * item.weight, 0) /
         totalWeight
       : 0;
+  const history = evaluateRecommenderHistory(perfume.history, {
+    occasions: input.selection.occasions,
+    season: input.climate.estacao,
+    now: input.now,
+  });
 
   const explanation = explainRecommenderResult({
     perfume,
@@ -134,13 +140,32 @@ function scorePerfume(perfume: RecommenderPerfume, input: RecommenderInput) {
 
   return {
     perfume,
-    score: Math.round(normalizedScore),
-    reasons: explanation.reasons,
+    score: Math.round(Math.max(0, Math.min(100, normalizedScore + history.adjustment))),
+    reasons: [...history.reasons, ...explanation.reasons]
+      .filter((reason, index, all) => all.indexOf(reason) === index)
+      .slice(0, 3),
     attention: explanation.attention,
+    availabilityNotice:
+      perfume.containerLevel === "low"
+        ? "Nível informado: No final."
+        : perfume.containerLevel === "empty"
+          ? "Nível informado: Acabou."
+          : null,
     contributions,
+    historyAdjustment: history.adjustment,
+    historyReasons: history.reasons,
+    historySignals: history.signals,
     tieBreakers: {
       weather: contributions.find((item) => item.criterion === "weather")?.score ?? 0,
       occasion: contributions.find((item) => item.criterion === "occasion")?.score ?? 0,
+      historicalOccasion:
+        history.signals.find((item) => item.key === "occasion")?.score ?? 0,
+      historicalSatisfaction:
+        history.signals.find((item) => item.key === "satisfaction")?.score ?? 0,
+      historicalCompliments:
+        history.signals.find((item) => item.key === "complimentRate")?.score ?? 0,
+      historicalRecency:
+        history.signals.find((item) => item.key === "recency")?.score ?? 0,
       versatility: scoreMetric(perfume, "performance", ["versatilidade"]) ?? 0,
       fixation: scoreMetric(perfume, "performance", ["fixacao"]) ?? 0,
     },
@@ -152,6 +177,10 @@ function compareResults(left: RecommenderScoreResult, right: RecommenderScoreRes
     right.score - left.score ||
     right.tieBreakers.weather - left.tieBreakers.weather ||
     right.tieBreakers.occasion - left.tieBreakers.occasion ||
+    right.tieBreakers.historicalOccasion - left.tieBreakers.historicalOccasion ||
+    right.tieBreakers.historicalSatisfaction - left.tieBreakers.historicalSatisfaction ||
+    right.tieBreakers.historicalCompliments - left.tieBreakers.historicalCompliments ||
+    right.tieBreakers.historicalRecency - left.tieBreakers.historicalRecency ||
     right.tieBreakers.versatility - left.tieBreakers.versatility ||
     right.tieBreakers.fixation - left.tieBreakers.fixation ||
     left.perfume.name.localeCompare(right.perfume.name, "pt-BR", {

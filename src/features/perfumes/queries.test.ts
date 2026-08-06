@@ -14,7 +14,9 @@ vi.mock("@/lib/supabase/server", () => ({
 import {
   getOwnPerfume,
   getOwnPerfumeDashboard,
+  getOwnReplenishmentSummary,
   listOwnPerfumes,
+  listOwnRecommenderPerfumes,
 } from "./queries";
 
 type QueryResult = { count?: number | null; data: unknown; error: unknown };
@@ -22,6 +24,8 @@ type QueryResult = { count?: number | null; data: unknown; error: unknown };
 function query(result: QueryResult) {
   const builder = {
     eq: vi.fn(() => builder),
+    in: vi.fn(() => builder),
+    is: vi.fn(() => builder),
     limit: vi.fn(() => builder),
     maybeSingle: vi.fn(async () => result),
     order: vi.fn(() => builder),
@@ -56,6 +60,9 @@ const perfumeRows = [
     elegance: null,
     sensuality: 55,
     profile_tags: ["versatil"],
+    container_level: "low",
+    replenishment_intent: "buy_again",
+    container_level_updated_at: "2026-08-03T12:00:00.000Z",
   },
   {
     id: "perfume-1",
@@ -77,6 +84,9 @@ const perfumeRows = [
     elegance: null,
     sensuality: null,
     profile_tags: [],
+    container_level: "unknown",
+    replenishment_intent: null,
+    container_level_updated_at: null,
   },
 ];
 
@@ -109,6 +119,8 @@ describe("perfume queries", () => {
       freshness: 0,
       elegance: null,
       profileTags: ["versatil"],
+      containerLevel: "low",
+      replenishmentIntent: "buy_again",
     });
     expect(perfumesQuery.eq).toHaveBeenCalledWith("user_id", "user-1");
     expect(createSignedUrls).toHaveBeenCalledWith(
@@ -118,6 +130,81 @@ describe("perfume queries", () => {
       ],
       3600,
     );
+  });
+
+  it("loads and aggregates only the authenticated user's recommender history", async () => {
+    const perfumeQuery = query({ data: [perfumeRows[0]], error: null });
+    const scoresQuery = query({
+      data: [
+        {
+          perfume_id: "perfume-2",
+          category: "occasion",
+          metric_key: "trabalho",
+          score: 80,
+        },
+      ],
+      error: null,
+    });
+    const usageQuery = query({
+      data: [
+        {
+          perfume_id: "perfume-2",
+          used_at: "2026-08-03T12:00:00.000Z",
+          occasion_key: "trabalho",
+          compliments_count: 0,
+          satisfaction: 4,
+          performance_rating: null,
+          season_key: "inverno",
+        },
+      ],
+      error: null,
+    });
+    const queue = [perfumeQuery, scoresQuery, usageQuery];
+    const from = vi.fn(() => queue.shift());
+    mocks.createServerSupabase.mockResolvedValue({
+      from,
+      storage: {
+        from: vi.fn(() => ({
+          createSignedUrls: vi.fn().mockResolvedValue({ data: [], error: null }),
+        })),
+      },
+    });
+
+    const result = await listOwnRecommenderPerfumes();
+
+    expect(result[0]).toMatchObject({
+      id: "perfume-2",
+      history: {
+        totalUses: 1,
+        complimentsTotal: 0,
+        satisfactionTotal: 4,
+      },
+    });
+    expect(scoresQuery.eq).toHaveBeenCalledWith("user_id", "user-1");
+    expect(usageQuery.eq).toHaveBeenCalledWith("user_id", "user-1");
+    expect(usageQuery.in).toHaveBeenCalledWith("perfume_id", ["perfume-2"]);
+  });
+
+  it("loads a private replenishment summary from real perfume rows", async () => {
+    const low = query({ count: 2, data: null, error: null });
+    const empty = query({ count: 1, data: null, error: null });
+    const buying = query({ count: 2, data: null, error: null });
+    const undecided = query({ count: 1, data: null, error: null });
+    const queries = [low, empty, buying, undecided];
+    const queue = [...queries];
+    mocks.createServerSupabase.mockResolvedValue({
+      from: vi.fn(() => queue.shift()),
+    });
+
+    await expect(getOwnReplenishmentSummary()).resolves.toEqual({
+      lowCount: 2,
+      emptyCount: 1,
+      purchaseIntentCount: 2,
+      undecidedCount: 1,
+    });
+    for (const item of queries) {
+      expect(item.eq).toHaveBeenCalledWith("user_id", "user-1");
+    }
   });
 
   it("returns one owned perfume with ordered pyramid notes and scores", async () => {

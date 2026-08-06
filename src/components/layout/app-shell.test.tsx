@@ -19,12 +19,14 @@ describe("AppShell", () => {
       </AppShell>,
     );
 
-    expect(screen.getAllByRole("link", { name: "Dashboard" }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("link", { name: "Minha Coleção" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: "Visão geral" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: "Minha coleção" }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole("link", { name: "Recomendador" })[0]).toHaveAttribute(
       "aria-current",
       "page",
     );
+    expect(screen.getAllByRole("link", { name: "Diário de uso" }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("link", { name: "Análises" }).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Abrir menu" })).toBeInTheDocument();
   });
 
@@ -45,6 +47,24 @@ describe("AppShell", () => {
     expect(screen.getByRole("button", { name: "Sair" })).toBeInTheDocument();
   });
 
+  it("marks a new module as active on nested routes", () => {
+    pathnameMock.mockReturnValue("/diario/registro");
+
+    render(
+      <AppShell profile={{ displayName: "Leonardo" }} user={{ email: "leo@example.com" }}>
+        <h1>Conteúdo</h1>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole("link", { name: "Diário de uso" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(screen.getByRole("link", { name: "Visão geral" })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
   it("traps the mobile menu flow and restores trigger focus on Escape", async () => {
     const user = userEvent.setup();
     render(
@@ -56,6 +76,7 @@ describe("AppShell", () => {
 
     await user.click(trigger);
     expect(screen.getByRole("dialog", { name: "Menu principal" })).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Diário de uso" })).toHaveLength(2);
     expect(document.body.style.overflow).toBe("hidden");
 
     await user.keyboard("{Escape}");

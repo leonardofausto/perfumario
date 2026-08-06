@@ -13,6 +13,13 @@
   --ink: #1c1710;
   --muted: #756959;
   --amber: #b8793e;
+  --danger: #8d3028;
+  --attention: #76501f;
+  --surface: #fffdf8;
+  --surface-muted: rgba(255, 253, 248, 0.72);
+  --focus-ring: color-mix(in srgb, var(--amber) 72%, white);
+  --radius-control: 9px;
+  --radius-panel: 14px;
   --font-display: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-body: "Avenir Next", Avenir, "Segoe UI", sans-serif;
   --background: var(--ivory);
@@ -56,8 +63,19 @@ input {
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--amber) 72%, white);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+button,
+a {
+  touch-action: manipulation;
 }
 
 .public-background {

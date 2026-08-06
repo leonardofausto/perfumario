@@ -26,6 +26,9 @@ function perfume(
     elegance: 65,
     sensuality: 55,
     profileTags: [],
+    containerLevel: "unknown",
+    replenishmentIntent: null,
+    containerLevelUpdatedAt: null,
     scores: [
       { category: "season", metricKey: "verao", score: 80 },
       { category: "occasion", metricKey: "trabalho", score: 75 },
@@ -64,6 +67,104 @@ function input(overrides: Partial<RecommenderInput> = {}): RecommenderInput {
 }
 
 describe("scorePerfumes", () => {
+  it("keeps the exact previous result when the user has no history", () => {
+    const withoutHistory = scorePerfumes(input())[0];
+    const withEmptyHistory = scorePerfumes(
+      input({ perfumes: [perfume({ history: undefined })] }),
+    )[0];
+
+    expect(withEmptyHistory.score).toBe(withoutHistory.score);
+    expect(withEmptyHistory.historyAdjustment).toBe(0);
+    expect(withEmptyHistory.historyReasons).toEqual([]);
+  });
+
+  it("limits historical impact and does not use container level as a signal", () => {
+    const history = {
+      totalUses: 8,
+      complimentsTotal: 8,
+      complimentedUses: 6,
+      satisfactionTotal: 40,
+      satisfactionCount: 8,
+      performanceTotal: 40,
+      performanceCount: 8,
+      lastUsedAt: "2026-06-01T12:00:00.000Z",
+      byOccasion: {},
+      bySeason: {},
+    };
+    const full = scorePerfumes(
+      input({
+        now: "2026-08-03T12:00:00.000Z",
+        perfumes: [perfume({ history, containerLevel: "full" })],
+      }),
+    )[0];
+    const empty = scorePerfumes(
+      input({
+        now: "2026-08-03T12:00:00.000Z",
+        perfumes: [perfume({ history, containerLevel: "empty" })],
+      }),
+    )[0];
+
+    expect(Math.abs(full.historyAdjustment)).toBeLessThanOrEqual(5);
+    expect(empty.score).toBe(full.score);
+    expect(empty.availabilityNotice).toBe("Nível informado: Acabou.");
+  });
+
+  it("uses success in the active occasion only after equal main compatibility", () => {
+    const successfulSample = {
+      totalUses: 3,
+      complimentsTotal: 3,
+      complimentedUses: 3,
+      satisfactionTotal: 15,
+      satisfactionCount: 3,
+      performanceTotal: 0,
+      performanceCount: 0,
+    };
+    const neutralSample = {
+      ...successfulSample,
+      complimentsTotal: 0,
+      complimentedUses: 0,
+      satisfactionTotal: 9,
+    };
+    const common = {
+      ...neutralSample,
+      lastUsedAt: "2026-08-01T12:00:00.000Z",
+      bySeason: {},
+    };
+    const successful = perfume({
+      id: "successful",
+      name: "Sucesso real",
+      history: {
+        ...successfulSample,
+        lastUsedAt: common.lastUsedAt,
+        byOccasion: { trabalho: successfulSample },
+        bySeason: {},
+      },
+    });
+    const neutral = perfume({
+      id: "neutral",
+      name: "Neutro",
+      history: {
+        ...common,
+        byOccasion: { trabalho: neutralSample },
+      },
+    });
+
+    const results = scorePerfumes(
+      input({
+        now: "2026-08-03T12:00:00.000Z",
+        perfumes: [neutral, successful],
+      }),
+    );
+
+    expect(results.map((result) => result.perfume.id)).toEqual([
+      "successful",
+      "neutral",
+    ]);
+    expect(results[0].historyReasons).toContain(
+      "Costuma funcionar bem em trabalho.",
+    );
+  });
+
   it("calculates a normalized compatibility score from the real selection groups", () => {
     const [result] = scorePerfumes(input());
 

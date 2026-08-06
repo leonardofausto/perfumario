@@ -89,6 +89,10 @@ async function login(page: Page) {
 }
 
 test("previews and applies autofill to a new perfume without saving", async ({ page }) => {
+  test.skip(
+    process.env.NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE !== "true",
+    "Perfume autofill is intentionally hidden.",
+  );
   await login(page);
   await page.route("**/api/perfumes/autofill", (route) =>
     route.fulfill({ json: response, status: 200 }),
@@ -121,6 +125,10 @@ test("previews and applies autofill to a new perfume without saving", async ({ p
 });
 
 test("keeps edit data until a researched difference is selected", async ({ page }) => {
+  test.skip(
+    process.env.NEXT_PUBLIC_PERFUME_AUTOFILL_VISIBLE !== "true",
+    "Perfume autofill is intentionally hidden.",
+  );
   const perfumeId = process.env.E2E_PERFUME_ID;
   test.skip(!perfumeId, "E2E_PERFUME_ID is not configured.");
   await login(page);

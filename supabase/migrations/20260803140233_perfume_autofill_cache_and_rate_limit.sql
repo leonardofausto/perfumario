@@ -93,4 +93,4 @@ grant execute on function public.consume_perfume_autofill_quota(
   uuid,
   timestamptz,
   integer
-) to service_role;
+) to service_role;;

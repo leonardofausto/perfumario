@@ -27,6 +27,9 @@ const perfume: RecommenderPerfume = {
   elegance: 70,
   sensuality: 80,
   profileTags: [],
+  containerLevel: "unknown",
+  replenishmentIntent: null,
+  containerLevelUpdatedAt: null,
   scores: [],
 };
 

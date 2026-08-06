@@ -1,0 +1,539 @@
+.diary {
+  display: grid;
+  gap: 18px;
+}
+
+.toolbar,
+.secondaryFilters,
+.entryHeading,
+.editorHeader,
+.editorFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.toolbar {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--sand);
+}
+
+.kicker {
+  margin: 0 0 8px;
+  color: var(--green);
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.filterGroup,
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.filterGroup a,
+.segmented span {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  border: 1px solid var(--sand);
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.74);
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.filterGroup a[aria-current="page"],
+.segmented input:checked + span {
+  border-color: var(--green);
+  background: var(--green);
+  color: white;
+}
+
+.primaryButton,
+.emptyState button,
+.emptyState a,
+.editorFooter button:not(.secondaryButton),
+.confirmation button:not(.secondaryButton),
+.routeError button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 17px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--green);
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.timeline {
+  display: grid;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timelineItem {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 18px;
+  margin-left: 13px;
+  padding: 0 0 28px 32px;
+  border-left: 1px solid var(--sand-strong);
+  content-visibility: auto;
+  contain-intrinsic-size: 120px;
+}
+
+.timelineItem:last-child {
+  border-left-color: transparent;
+}
+
+.timelineDot {
+  position: absolute;
+  top: 22px;
+  left: -6px;
+  width: 11px;
+  height: 11px;
+  border: 3px solid var(--ivory);
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 1px var(--green);
+}
+
+.fragranceImage {
+  position: relative;
+  display: grid;
+  width: 64px;
+  height: 76px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+  background: var(--ivory-raised);
+  color: var(--green);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+}
+
+.fragranceImage img {
+  object-fit: contain;
+}
+
+.timeline article {
+  min-width: 0;
+  padding: 15px 18px 17px;
+  border-top: 1px solid var(--sand);
+  background: rgba(255, 253, 248, 0.58);
+}
+
+.entryHeading time {
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.entryHeading h2 {
+  margin: 3px 0 0;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 600;
+}
+
+.entryHeading p,
+.notes {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.entryActions {
+  display: flex;
+  gap: 5px;
+}
+
+.entryActions button,
+.editorHeader button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--green-dark);
+  cursor: pointer;
+}
+
+.entryFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 13px;
+}
+
+.entryFacts span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.notes {
+  margin-top: 13px;
+  line-height: 1.55;
+}
+
+.emptyState,
+.routeError {
+  display: grid;
+  min-height: 330px;
+  place-items: center;
+  align-content: center;
+  padding: 36px;
+  border: 1px dashed var(--sand-strong);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.62);
+  color: var(--green);
+  text-align: center;
+}
+
+.emptyState h2,
+.routeError h1 {
+  margin: 14px 0 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+}
+
+.emptyState p,
+.routeError > p:not(.kicker) {
+  max-width: 480px;
+  margin: 9px 0 22px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.loadMore {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  justify-self: center;
+  padding-inline: 17px;
+  color: var(--green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.modalBackdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  place-items: start center;
+  padding: 24px;
+  background: rgba(20, 28, 22, 0.56);
+  backdrop-filter: blur(6px);
+}
+
+.editor,
+.confirmation {
+  width: min(100%, 760px);
+  margin-block: auto;
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  background: var(--ivory-raised);
+  box-shadow: 0 28px 80px rgba(22, 31, 24, 0.28);
+}
+
+.editor {
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.editorHeader {
+  align-items: flex-start;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--sand);
+}
+
+.editorHeader h2,
+.confirmation h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.form {
+  display: grid;
+  gap: 18px;
+  padding-top: 20px;
+}
+
+.form label,
+.segmentedField legend {
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.form label > small,
+.segmentedField legend small {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.primaryFields,
+.weatherGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.form label {
+  display: grid;
+  gap: 7px;
+}
+
+.form input:not([type="radio"], [type="checkbox"], [type="hidden"]),
+.form select,
+.form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  background: #fffdf8;
+  color: var(--ink);
+  font: inherit;
+}
+
+.form textarea {
+  resize: vertical;
+}
+
+.segmentedField {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.segmentedField legend {
+  margin-bottom: 8px;
+}
+
+.segmented label {
+  position: relative;
+  display: block;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+}
+
+.segmented input:focus-visible + span {
+  outline: 3px solid color-mix(in srgb, var(--amber) 72%, white);
+  outline-offset: 2px;
+}
+
+.exactCount {
+  max-width: 180px;
+  margin-top: 9px;
+}
+
+.optionalSection {
+  padding: 14px;
+  border: 1px solid var(--sand);
+  border-radius: 10px;
+}
+
+.weatherToggle {
+  display: flex !important;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 8px !important;
+  cursor: pointer;
+}
+
+.weatherGrid {
+  margin-top: 14px;
+}
+
+.fieldError,
+.formMessage {
+  color: #9b3024;
+  font-size: 0.7rem;
+}
+
+.formMessage {
+  min-height: 18px;
+  margin: 0;
+}
+
+.secondaryButton {
+  min-height: 42px;
+  padding-inline: 15px;
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 750;
+}
+
+.editorFooter {
+  justify-content: flex-end;
+}
+
+.confirmation {
+  max-width: 430px;
+  padding: 28px;
+}
+
+.confirmation > p:not(.kicker) {
+  color: var(--muted);
+}
+
+.confirmation > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+.loadingLine {
+  display: block;
+  width: 100%;
+  height: 92px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #eee4d4, #fffaf1, #eee4d4);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+@media (max-width: 700px) {
+  .toolbar,
+  .secondaryFilters {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+
+  .timelineItem {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+    margin-left: 7px;
+    padding-left: 20px;
+  }
+
+  .fragranceImage {
+    width: 48px;
+    height: 58px;
+  }
+
+  .timeline article {
+    padding: 12px;
+  }
+
+  .entryHeading {
+    align-items: flex-start;
+  }
+
+  .modalBackdrop {
+    padding: 0;
+  }
+
+  .editor {
+    min-height: 100svh;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .confirmation {
+    width: calc(100% - 32px);
+    margin: auto 16px;
+    padding: 22px;
+  }
+
+  .primaryFields,
+  .weatherGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .editorFooter {
+    position: sticky;
+    bottom: 0;
+    padding-block: 12px;
+    background: var(--ivory-raised);
+  }
+}
+
+@media (max-width: 380px) {
+  .entryHeading {
+    gap: 10px;
+  }
+
+  .entryHeading h2,
+  .notes {
+    overflow-wrap: anywhere;
+  }
+
+  .confirmation > div {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .confirmation button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .loadingLine {
+    animation: none;
+  }
+}

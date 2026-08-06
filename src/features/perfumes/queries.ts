@@ -17,6 +17,12 @@ import type {
   PerfumeSummary,
   ScoreCategory,
 } from "./types";
+import { aggregateRecommenderHistory } from "@/features/recommender/history";
+import type { RecommenderHistoryUsage } from "@/features/recommender/types";
+import type {
+  ContainerLevel,
+  ReplenishmentIntent,
+} from "@/features/experience/types";
 
 type PerfumeSummaryRow = {
   id: string;
@@ -38,6 +44,9 @@ type PerfumeSummaryRow = {
   elegance: number | null;
   sensuality: number | null;
   profile_tags: string[] | null;
+  container_level: ContainerLevel;
+  replenishment_intent: ReplenishmentIntent | null;
+  container_level_updated_at: string | null;
 };
 
 type PerfumeDetailRow = PerfumeSummaryRow & {
@@ -61,7 +70,7 @@ type ScoreRow = {
 };
 
 const SUMMARY_COLUMNS =
-  "id, brand, name, concentration, bottle_format, inspiration_kind, inspired_by, olfactory_families, image_path, is_favorite, launch_year, category_type, audience, intensity, sweetness, freshness, elegance, sensuality, profile_tags";
+  "id, brand, name, concentration, bottle_format, inspiration_kind, inspired_by, olfactory_families, image_path, is_favorite, launch_year, category_type, audience, intensity, sweetness, freshness, elegance, sensuality, profile_tags, container_level, replenishment_intent, container_level_updated_at";
 const LEGACY_SUMMARY_COLUMNS =
   "id, brand, name, concentration, bottle_format, inspiration_kind, inspired_by, olfactory_families, image_path, is_favorite";
 
@@ -97,6 +106,9 @@ function isMissingRemodelColumnError(error: unknown) {
         "elegance",
         "sensuality",
         "profile_tags",
+        "container_level",
+        "replenishment_intent",
+        "container_level_updated_at",
       ].some((column) => message.includes(column)))
   );
 }
@@ -113,6 +125,9 @@ function withRemodelDefaults(row: PerfumeSummaryRow): PerfumeSummaryRow {
     elegance: row.elegance ?? null,
     sensuality: row.sensuality ?? null,
     profile_tags: row.profile_tags ?? [],
+    container_level: row.container_level ?? "unknown",
+    replenishment_intent: row.replenishment_intent ?? null,
+    container_level_updated_at: row.container_level_updated_at ?? null,
   };
 }
 
@@ -195,6 +210,9 @@ function mapSummary(
     elegance: row.elegance,
     sensuality: row.sensuality,
     profileTags: row.profile_tags ?? [],
+    containerLevel: row.container_level,
+    replenishmentIntent: row.replenishment_intent,
+    containerLevelUpdatedAt: row.container_level_updated_at,
   };
 }
 
@@ -252,15 +270,26 @@ export async function listOwnRecommenderPerfumes(): Promise<RecommenderPerfume[]
   }
 
   const perfumeIds = summaries.map((perfume) => perfume.id);
-  const scoresResult = await supabase
-    .from("perfume_scores")
-    .select("perfume_id, category, metric_key, score")
-    .eq("user_id", user.id)
-    .in("perfume_id", perfumeIds)
-    .order("category", { ascending: true })
-    .order("metric_key", { ascending: true });
+  const [scoresResult, usageResult] = await Promise.all([
+    supabase
+      .from("perfume_scores")
+      .select("perfume_id, category, metric_key, score")
+      .eq("user_id", user.id)
+      .in("perfume_id", perfumeIds)
+      .order("category", { ascending: true })
+      .order("metric_key", { ascending: true }),
+    supabase
+      .from("usage_logs")
+      .select(
+        "perfume_id, used_at, occasion_key, compliments_count, satisfaction, performance_rating, season_key",
+      )
+      .eq("user_id", user.id)
+      .in("perfume_id", perfumeIds)
+      .order("used_at", { ascending: false }),
+  ]);
 
   assertQuerySucceeded(scoresResult.error);
+  assertQuerySucceeded(usageResult.error);
 
   const scoresByPerfume = new Map<string, PerfumeScore[]>();
 
@@ -273,10 +302,32 @@ export async function listOwnRecommenderPerfumes(): Promise<RecommenderPerfume[]
     });
     scoresByPerfume.set(score.perfume_id, current);
   }
+  const histories = aggregateRecommenderHistory(
+    ((usageResult.data ?? []) as Array<{
+      perfume_id: string;
+      used_at: string;
+      occasion_key: string;
+      compliments_count: number;
+      satisfaction: number;
+      performance_rating: number | null;
+      season_key: string | null;
+    }>).map(
+      (usage): RecommenderHistoryUsage => ({
+        perfumeId: usage.perfume_id,
+        usedAt: usage.used_at,
+        occasionKey: usage.occasion_key,
+        complimentsCount: usage.compliments_count,
+        satisfaction: usage.satisfaction,
+        performanceRating: usage.performance_rating,
+        seasonKey: usage.season_key,
+      }),
+    ),
+  );
 
   return summaries.map((perfume) => ({
     ...perfume,
     scores: scoresByPerfume.get(perfume.id) ?? [],
+    history: histories.get(perfume.id),
   }));
 }
 
@@ -399,5 +450,35 @@ export async function getOwnPerfumeDashboard(): Promise<{
     totalCount: totalResult.count ?? 0,
     favoriteCount: favoriteResult.count ?? 0,
     recent: rows.map((row) => mapSummary(row, signedUrls)),
+  };
+}
+
+export async function getOwnReplenishmentSummary(): Promise<{
+  lowCount: number;
+  emptyCount: number;
+  purchaseIntentCount: number;
+  undecidedCount: number;
+}> {
+  const user = await requireUser();
+  const supabase = await createServerSupabase();
+  const baseCount = () =>
+    supabase.from("perfumes").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+  const [low, empty, buying, undecided] = await Promise.all([
+    baseCount().eq("container_level", "low"),
+    baseCount().eq("container_level", "empty"),
+    baseCount().in("replenishment_intent", ["buy_again", "buy_decant", "buy_bottle"]),
+    baseCount().in("container_level", ["low", "empty"]).is("replenishment_intent", null),
+  ]);
+
+  assertQuerySucceeded(low.error);
+  assertQuerySucceeded(empty.error);
+  assertQuerySucceeded(buying.error);
+  assertQuerySucceeded(undecided.error);
+
+  return {
+    lowCount: low.count ?? 0,
+    emptyCount: empty.count ?? 0,
+    purchaseIntentCount: buying.count ?? 0,
+    undecidedCount: undecided.count ?? 0,
   };
 }

@@ -9,6 +9,9 @@ O projeto permite cadastrar, editar, consultar, favoritar e excluir perfumes da 
 - Coleção privada de fragrâncias por usuário autenticado.
 - Cadastro e edição de perfumes com imagem, identidade, descrição, pirâmide olfativa, acordes, desempenho e ocasiões de uso.
 - Tela de detalhes com leitura editorial da fragrância.
+- Visão geral privada com resumo real da estante e da atividade recente.
+- Diário de uso, análises pessoais e controle qualitativo do nível dos frascos.
+- Recomendador contextual que considera a coleção e o histórico do usuário.
 - Favoritos, filtros por status e marca, paginação e ações administrativas nos cards da coleção.
 - Upload de imagens privadas com suporte a JPG, PNG, AVIF e WebP.
 - Validação de dados com Zod e ações de servidor no Next.js.
@@ -46,9 +49,14 @@ Preencha:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+E2E_USER_EMAIL=
+E2E_USER_PASSWORD=
+E2E_PERFUME_ID=
 ```
 
 Somente variáveis públicas do Supabase devem ficar disponíveis para o navegador. Chaves administrativas e senhas de banco não devem ser versionadas.
+As variáveis `E2E_*` são exclusivas de uma conta dedicada de testes e são
+carregadas apenas pelo Playwright.
 
 ## Como rodar localmente
 
@@ -77,6 +85,9 @@ npm.cmd run lint
 npm.cmd run typecheck
 npm.cmd test
 npm.cmd run build
+npm.cmd run check:stable
+npm.cmd run test:policy
+npm.cmd run test:e2e
 ```
 
 Validação completa:
